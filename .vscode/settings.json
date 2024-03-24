@@ -1,0 +1,6 @@
+{
+    "cmake.generator": "Ninja",
+    "cmake.configureArgs": [
+        "-DSPDLOG_BUILD_SHARED=on",
+    ]
+}
