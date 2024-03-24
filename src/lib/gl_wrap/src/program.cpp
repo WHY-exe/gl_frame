@@ -33,7 +33,7 @@ uint32_t Program::Get() const noexcept { return m_program; }
 
 void Program::SetUniformValue(const std::string& name,
                               std::variant<int, float> value) {
-  const float uniform_locaion = glGetUniformLocation(m_program, name.c_str());
+  const int uniform_locaion = glGetUniformLocation(m_program, name.c_str());
   if (uniform_locaion == -1) {
     spdlog::error("fail to fetch uniform location with name {}", name);
     return;
@@ -63,7 +63,7 @@ bool Program::Link() noexcept {
   glGetProgramiv(m_program, GL_LINK_STATUS, &success);
   if (!success) {
     glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &info_len);
-    std::unique_ptr<char> info_log = std::make_unique<char>(info_len);
+    std::unique_ptr<char[]> info_log = std::make_unique<char[]>(info_len);
     glGetProgramInfoLog(m_program, 512, nullptr, info_log.get());
     spdlog::error("fail to link shader program: {}", info_log.get());
     return false;

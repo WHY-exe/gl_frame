@@ -101,14 +101,15 @@ void App::Run() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     program.Install();
-    float time = glfwGetTime();
-    float xOffset = ((sin(time) / 2.0f) + 0.5f) / 2.0f;
-    program.SetUniformValue("xOffset", xOffset);
+    double time = glfwGetTime();
+    double xOffset = ((sin(time) / 2.0f) + 0.5f) / 2.0f;
+    program.SetUniformValue("xOffset", (float)xOffset);
 
     layout.Bind();
 
     // glDrawArrays(GL_TRIANGLES, 0, 6);
-    GLCall(glDrawElements(GL_TRIANGLES, indicies.size(), GL_UNSIGNED_INT, 0));
+    GLCall(
+        glDrawElements(GL_TRIANGLES, (int)indicies.size(), GL_UNSIGNED_INT, 0));
     return true;
   });
   m_window.Run();

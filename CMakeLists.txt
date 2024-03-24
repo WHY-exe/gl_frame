@@ -7,15 +7,8 @@ project(gl_frame)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# gcc编译选项
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-    # 设置Debug编译选项
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -ggdb")
-    # 设置Release编译选项
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
 # msvc 编译选项
-elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     # 设置Debug编译选项
     if (POLICY CMP0141)
         cmake_policy(SET CMP0141 NEW)
@@ -29,10 +22,18 @@ elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
     cmake_host_system_information(RESULT CPU_NUMBER_OF_LOGICAL_CORES QUERY NUMBER_OF_LOGICAL_CORES)
     # 设置Release编译选项
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /0x")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /WX /MP${CPU_NUMBER_OF_LOGICAL_CORES}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /MP${CPU_NUMBER_OF_LOGICAL_CORES}")
+# gcc编译选项
+else()
+     # 设置Debug编译选项
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -ggdb")
+    # 设置Release编译选项
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lpthread")
     add_definitions(-DLINUX)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)

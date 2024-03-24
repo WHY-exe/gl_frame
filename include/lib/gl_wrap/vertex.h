@@ -19,10 +19,10 @@ class Buffer {
 
 struct LayoutAttri {
   uint32_t index;  // index: where layout store in the gpu memory
-  uint32_t size;   // size: the size of the element a vertex contain
+  int32_t size;    // size: the size of the element a vertex contain
   uint32_t type;   // type: the type of the element
   bool normalize;  // normalize: should data be normalized to [-1.0,1.0]
-  size_t stride;   // stride: size of vertex in byte
+  int32_t stride;  // stride: size of vertex in byte
   void* offset;    // offset: the offset where position data begin in buffer
 };
 

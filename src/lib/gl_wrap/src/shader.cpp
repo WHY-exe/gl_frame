@@ -30,7 +30,7 @@ bool Shader::InitFromSrc(ShaderType type,
                          const std::string& shader_src) noexcept {
   m_shader = glCreateShader((uint32_t)type);
   const char* pcode = shader_src.c_str();
-  int src_length = shader_src.length();
+  int src_length = (int)shader_src.length();
   glShaderSource(m_shader, 1, &pcode, &src_length);
   glCompileShader(m_shader);
   // check if compliation is successful
@@ -39,7 +39,7 @@ bool Shader::InitFromSrc(ShaderType type,
   if (!success) {
     // get the info log length
     glGetShaderiv(m_shader, GL_INFO_LOG_LENGTH, &info_len);
-    std::unique_ptr<char> info_log = std::make_unique<char>(info_len);
+    std::unique_ptr<char[]> info_log = std::make_unique<char[]>(info_len);
 
     glGetShaderInfoLog(m_shader, info_len, NULL, info_log.get());
     spdlog::error("SHADER::COMPILATION_FAILED: {}", info_log.get());
