@@ -21,7 +21,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     # 开启多线程编译
     cmake_host_system_information(RESULT CPU_NUMBER_OF_LOGICAL_CORES QUERY NUMBER_OF_LOGICAL_CORES)
     # 设置Release编译选项
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /0x")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Ox")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /MP${CPU_NUMBER_OF_LOGICAL_CORES}")
 # gcc编译选项
 else()
@@ -61,6 +61,7 @@ set(THIRD_PARTY_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/third-party)
 include_directories(
     ${INCLUDE_BASE}
     ${INCLUDE_BASE}/lib
+    ${THIRD_PARTY_INCLUDE}/assimp/include
     ${THIRD_PARTY_INCLUDE}/glew-cmake/include
     ${THIRD_PARTY_INCLUDE}/glfw/include
     ${THIRD_PARTY_INCLUDE}/glm

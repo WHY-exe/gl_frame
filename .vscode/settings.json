@@ -2,5 +2,6 @@
     "cmake.generator": "Ninja",
     "cmake.configureArgs": [
         "-DSPDLOG_BUILD_SHARED=on",
+        // "-DVC10_STDINT_FIX=on"
     ]
 }
