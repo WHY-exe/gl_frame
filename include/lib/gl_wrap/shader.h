@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <string>
 
+#include "bindable.h"
 namespace gl {
 
 enum class ShaderType {
@@ -10,24 +11,27 @@ enum class ShaderType {
   FRAGMENT = 0x8B30,
   GEOMETRY = 0x8DD9
 };
+class Program;
+class Shader : public Bindable {
+  friend class Program;
 
-class Shader {
  private:
-  uint32_t m_shader;
-  bool m_is_init;
+  Program& program_;
+  bool is_init_;
 
  public:
-  Shader() noexcept;
-  Shader(ShaderType type, const std::string& shader_path);
+  Shader(Program& program) noexcept;
+  ~Shader() noexcept;
+
+  Shader(Program& program, ShaderType type, const std::string& shader_path);
 
   bool InitFromFile(ShaderType type, const std::string& shader_path);
   bool InitFromSrc(ShaderType type, const std::string& shader_src) noexcept;
 
-  ~Shader();
-
+  bool Bind() noexcept override final;
   void Destroy() noexcept;
-  bool IsInit() noexcept;
-  uint32_t Get() noexcept;
+
+  bool IsInit() const noexcept override;
 };
 
 }  // namespace gl

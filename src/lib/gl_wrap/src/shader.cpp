@@ -6,13 +6,17 @@
 
 #include "GL/glew.h"
 #include "common/exception.h"
+#include "error.h"
+#include "program.h"
 #include "spdlog/spdlog.h"
-
 namespace gl {
-Shader::Shader() noexcept : m_shader(0), m_is_init(false) {}
+Shader::Shader(Program& program) noexcept
+    : program_(program), is_init_(false) {}
 
-Shader::Shader(ShaderType type, const std::string& shader_path) {
-  m_is_init = InitFromFile(type, shader_path);
+Shader::Shader(Program& program, ShaderType type,
+               const std::string& shader_path)
+    : Shader(program) {
+  is_init_ = InitFromFile(type, shader_path);
 }
 
 bool Shader::InitFromFile(ShaderType type, const std::string& shader_path) {
@@ -28,38 +32,42 @@ bool Shader::InitFromFile(ShaderType type, const std::string& shader_path) {
 
 bool Shader::InitFromSrc(ShaderType type,
                          const std::string& shader_src) noexcept {
-  m_shader = glCreateShader((uint32_t)type);
+  identifier_ = glCreateShader((uint32_t)type);
   const char* pcode = shader_src.c_str();
   int src_length = (int)shader_src.length();
-  glShaderSource(m_shader, 1, &pcode, &src_length);
-  glCompileShader(m_shader);
+  glShaderSource(identifier_, 1, &pcode, &src_length);
+  glCompileShader(identifier_);
   // check if compliation is successful
   int success, info_len;
-  glGetShaderiv(m_shader, GL_COMPILE_STATUS, &success);
+  glGetShaderiv(identifier_, GL_COMPILE_STATUS, &success);
   if (!success) {
     // get the info log length
-    glGetShaderiv(m_shader, GL_INFO_LOG_LENGTH, &info_len);
+    glGetShaderiv(identifier_, GL_INFO_LOG_LENGTH, &info_len);
     std::unique_ptr<char[]> info_log = std::make_unique<char[]>(info_len);
 
-    glGetShaderInfoLog(m_shader, info_len, NULL, info_log.get());
+    glGetShaderInfoLog(identifier_, info_len, NULL, info_log.get());
     spdlog::error("SHADER::COMPILATION_FAILED: {}", info_log.get());
-    return m_is_init;
+    return is_init_;
   }
-  m_is_init = true;
-  return m_is_init;
+  is_init_ = true;
+  return is_init_;
 }
 
 Shader::~Shader() { Destroy(); }
 
+bool Shader::Bind() noexcept {
+  GLErrorInit;
+  GLCall(glAttachShader(program_.GetID(), identifier_));
+  return GLErrorResult;
+}
+
 void Shader::Destroy() noexcept {
   if (!IsInit()) {
-    glDeleteShader(m_shader);
-    m_shader = 0;
+    glDeleteShader(identifier_);
+    identifier_ = 0;
   }
 }
 
-bool Shader::IsInit() noexcept { return m_is_init; }
-
-uint32_t Shader::Get() noexcept { return m_shader; }
+bool Shader::IsInit() const noexcept { return is_init_; }
 
 }  // namespace gl

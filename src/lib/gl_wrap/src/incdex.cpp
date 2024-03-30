@@ -2,28 +2,35 @@
 #include "error.h"
 #include "index.h"
 namespace gl {
-namespace index {
-Buffer::Buffer(uint32_t count) noexcept : m_ebo(0) {
+IndexBuffer::IndexBuffer(uint32_t count) noexcept : Bindable() {
   // TODO: error handling
   Init(count);
 }
 
-Buffer::~Buffer() noexcept {
+IndexBuffer::~IndexBuffer() noexcept {
   if (IsInit()) {
-    glDeleteBuffers(1, &m_ebo);
+    glDeleteBuffers(1, &identifier_);
   }
 }
 
-void Buffer::Init(uint32_t count) { GLCall(glGenBuffers(count, &m_ebo)); }
-
-bool Buffer::IsInit() const noexcept { return m_ebo != 0; }
-
-void Buffer::Bind(const std::vector<uint32_t>& indicies) noexcept {
-  GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo));
-  GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                      indicies.size() * sizeof(uint32_t), indicies.data(),
-                      GL_STATIC_DRAW));
+void IndexBuffer::Init(uint32_t count) {
+  GLErrorInit;
+  GLCall(glGenBuffers(count, &identifier_));
 }
 
-}  // namespace index
+void IndexBuffer::SetBuffer(std::vector<uint32_t>&& indicies) {
+  buffer_ = std::move(indicies);
+}
+
+size_t IndexBuffer::GetBufferSize() const noexcept { return buffer_.size(); }
+
+bool IndexBuffer::Bind() noexcept {
+  GLErrorInit;
+  GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, identifier_));
+  GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                      buffer_.size() * sizeof(uint32_t), buffer_.data(),
+                      GL_STATIC_DRAW));
+  return GLErrorResult;
+}
+
 }  // namespace gl

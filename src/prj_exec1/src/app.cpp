@@ -57,7 +57,7 @@ void App::Run() {
     program.AttachShader(gl::ShaderType::VERTEX, "./shader/vertex_shader.vs");
     program.AttachShader(gl::ShaderType::FRAGMENT,
                          "./shader/fragment_shader.fs");
-    program.Link();
+    program.Bind();
   } else {
     spdlog::error("fail to init glProgram");
   }
@@ -69,7 +69,8 @@ void App::Run() {
       //-0.5f,  0.5f, 0.0f, 1.0, 1.0, 0.0	// top left
   };
   gl::vertex::Buffer vertex_buffer{};
-  vertex_buffer.Bind(vertices);
+  vertex_buffer.SetBuffer(std::move(vertices));
+  vertex_buffer.Bind();
   gl::vertex::LayoutAttri attri_pos{0};
   attri_pos.index = 0;
   attri_pos.size = 3;
@@ -93,25 +94,28 @@ void App::Run() {
       0, 1, 2
       // 1, 2, 3
   };
-  gl::index::Buffer index_buffer{};
-  index_buffer.Bind(indicies);
-  m_window.Update([&program, &layout, &indicies](glfw::Window& window) -> bool {
-    /* Render here */
-    glClearColor(0.2f, 0.3f, 0.2f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+  gl::IndexBuffer index_buffer{};
+  index_buffer.SetBuffer(std::move(indicies));
+  index_buffer.Bind();
+  m_window.Update(
+      [&program, &layout, &index_buffer](glfw::Window& window) -> bool {
+        GLErrorInit;
+        /* Render here */
+        glClearColor(0.2f, 0.3f, 0.2f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-    program.Install();
-    double time = glfwGetTime();
-    double xOffset = ((sin(time) / 2.0f) + 0.5f) / 2.0f;
-    program.SetUniformValue("xOffset", (float)xOffset);
+        program.Use();
+        double time = glfwGetTime();
+        double xOffset = ((sin(time) / 2.0f) + 0.5f) / 2.0f;
+        program.SetUniformValue("xOffset", (float)xOffset);
 
-    layout.Bind();
+        layout.Bind();
 
-    // glDrawArrays(GL_TRIANGLES, 0, 6);
-    GLCall(
-        glDrawElements(GL_TRIANGLES, (int)indicies.size(), GL_UNSIGNED_INT, 0));
-    return true;
-  });
+        // glDrawArrays(GL_TRIANGLES, 0, 6);
+        GLCall(glDrawElements(GL_TRIANGLES, index_buffer.GetBufferSize(),
+                              GL_UNSIGNED_INT, 0));
+        return true;
+      });
   m_window.Run();
 }
 

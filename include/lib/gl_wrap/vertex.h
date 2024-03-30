@@ -2,19 +2,22 @@
 #include <cstddef>
 #include <cstdint>
 #include <vector>
+
+#include "bindable.h"
 namespace gl {
 namespace vertex {
-class Buffer {
+class Buffer : public Bindable {
  private:
-  uint32_t m_buffer_object;
+  std::vector<float> buffer_;
 
  public:
-  explicit Buffer(uint32_t count = 1) noexcept;
   ~Buffer() noexcept;
 
+  explicit Buffer(uint32_t count = 1) noexcept;
   bool Init(uint32_t count = 1) noexcept;
-  void Bind(const std::vector<float>& vertex_data) noexcept;
-  bool IsInit() const noexcept;
+
+  void SetBuffer(std::vector<float>&& vertex_data) noexcept;
+  bool Bind() noexcept override final;
 };
 
 struct LayoutAttri {
@@ -26,18 +29,15 @@ struct LayoutAttri {
   void* offset;    // offset: the offset where position data begin in buffer
 };
 
-class Layout {
- private:
-  uint32_t m_vao;
-
+class Layout : public Bindable {
  public:
-  explicit Layout(uint32_t count = 1) noexcept;
   ~Layout() noexcept;
 
+  explicit Layout(uint32_t count = 1) noexcept;
   bool Init(uint32_t count = 1) noexcept;
-  void Bind() noexcept;
+
   void SetAttribute(const LayoutAttri& attri) noexcept;
-  bool IsInit() const noexcept;
+  bool Bind() noexcept override final;
 };
 
 }  // namespace vertex

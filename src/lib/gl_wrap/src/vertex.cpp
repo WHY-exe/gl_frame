@@ -6,56 +6,67 @@
 namespace gl {
 namespace vertex {
 
-Buffer::Buffer(uint32_t count) noexcept : m_buffer_object(0) {
+Buffer::Buffer(uint32_t count) noexcept {
   // TODO: exception handling
   Init(count);
 }
 
 Buffer::~Buffer() noexcept {
   if (IsInit()) {
-    glDeleteBuffers(1, &m_buffer_object);
+    glDeleteBuffers(1, &identifier_);
   }
 }
 
 bool Buffer::Init(uint32_t count) noexcept {
   // generate one buffer object and return a uint
   // to represent buffer
-  GLCall(glGenBuffers(count, &m_buffer_object));
+  GLErrorInit;
+  GLCall(glGenBuffers(count, &identifier_));
   return IsInit();
 }
 
-void Buffer::Bind(const std::vector<float>& vertex_data) noexcept {
-  GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_buffer_object));
+void Buffer::SetBuffer(std::vector<float>&& vertex_data) noexcept {
+  buffer_ = std::move(vertex_data);
+}
+
+bool Buffer::Bind() noexcept {
+  GLErrorInit;
+  GLCall(glBindBuffer(GL_ARRAY_BUFFER, identifier_));
   // copy the vertices data to the buffer object
   // with the specific type that currently bound
   // to the pipline
-  GLCall(glBufferData(GL_ARRAY_BUFFER, vertex_data.size() * sizeof(float),
-                      vertex_data.data(), GL_STATIC_DRAW));
+  if (!buffer_.empty()) {
+    GLCall(glBufferData(GL_ARRAY_BUFFER, buffer_.size() * sizeof(float),
+                        buffer_.data(), GL_STATIC_DRAW));
+  }
+  return GLErrorResult;
 }
 
-bool Buffer::IsInit() const noexcept { return m_buffer_object != 0; }
-
-Layout::Layout(uint32_t count) noexcept : m_vao(0) {
+Layout::Layout(uint32_t count) noexcept {
   // TODO: error handling
   Init(count);
 }
 
 Layout::~Layout() noexcept {
   if (IsInit()) {
-    glDeleteVertexArrays(1, &m_vao);
+    glDeleteVertexArrays(1, &identifier_);
   }
 }
 
 bool Layout::Init(uint32_t count) noexcept {
-  GLCall(glGenVertexArrays(count, &m_vao));
+  GLErrorInit;
+  GLCall(glGenVertexArrays(count, &identifier_));
   return IsInit();
 }
 
-bool Layout::IsInit() const noexcept { return m_vao != 0; }
-
-void Layout::Bind() noexcept { GLCall(glBindVertexArray(m_vao)); }
+bool Layout::Bind() noexcept {
+  GLErrorInit;
+  GLCall(glBindVertexArray(identifier_));
+  return GLErrorResult;
+}
 
 void Layout::SetAttribute(const LayoutAttri& attri) noexcept {
+  GLErrorInit;
   GLCall(glVertexAttribPointer(attri.index, attri.size, attri.type,
                                attri.normalize, attri.stride, attri.offset));
   GLCall(glEnableVertexAttribArray(attri.index));

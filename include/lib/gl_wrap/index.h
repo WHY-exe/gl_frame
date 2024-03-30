@@ -1,22 +1,22 @@
 #pragma once
 #include <cstdint>
 #include <vector>
+
+#include "bindable.h"
 namespace gl {
-namespace index {
-class Buffer {
- private:
-  uint32_t m_ebo;
+class IndexBuffer : public Bindable {
+ public:
+  std::vector<uint32_t> buffer_;
 
  public:
-  explicit Buffer(uint32_t count = 1) noexcept;
-  ~Buffer() noexcept;
+  ~IndexBuffer() noexcept;
 
+  explicit IndexBuffer(uint32_t count = 1) noexcept;
   void Init(uint32_t count = 1);
-  bool IsInit() const noexcept;
 
-  void Bind(const std::vector<uint32_t>& indicies) noexcept;
+  void SetBuffer(std::vector<uint32_t>&& indicies);
+  size_t GetBufferSize() const noexcept;
+  bool Bind() noexcept override final;
 };
-
-}  // namespace index
 
 }  // namespace gl

@@ -3,27 +3,24 @@
 #include <string>
 #include <variant>
 
+#include "bindable.h"
 namespace gl {
 enum class ShaderType;
 class Shader;
 
-class Program {
- private:
-  uint32_t m_program;
+class Program : public Bindable {
+  friend class Shader;
 
  public:
   Program() noexcept;
   ~Program() noexcept;
-  bool IsInit() const noexcept;
-  void AttachShader(Shader& shader) noexcept;
-  void AttachShader(gl::ShaderType type, const std::string& path);
+  bool AttachShader(Shader& shader) noexcept;
+  bool AttachShader(gl::ShaderType type, const std::string& path);
 
-  bool Link() noexcept;
+  bool Bind() noexcept override final;
+  void Use() noexcept;
 
   void SetUniformValue(const std::string& name, std::variant<int, float> value);
-
-  void Install() noexcept;
-  uint32_t Get() const noexcept;
 };
 
 }  // namespace gl
