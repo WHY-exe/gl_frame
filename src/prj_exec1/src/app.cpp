@@ -114,6 +114,9 @@ void App::Run() {
         // glDrawArrays(GL_TRIANGLES, 0, 6);
         GLCall(glDrawElements(GL_TRIANGLES, index_buffer.GetBufferSize(),
                               GL_UNSIGNED_INT, 0));
+        if (!GLErrorResult) {
+          spdlog::error("encounter gl error");
+        }
         return true;
       });
   m_window.Run();

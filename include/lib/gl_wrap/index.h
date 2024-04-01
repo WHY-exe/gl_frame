@@ -12,7 +12,7 @@ class IndexBuffer : public Bindable {
   ~IndexBuffer() noexcept;
 
   explicit IndexBuffer(uint32_t count = 1) noexcept;
-  void Init(uint32_t count = 1);
+  bool Init(uint32_t count = 1);
 
   void SetBuffer(std::vector<uint32_t>&& indicies);
   size_t GetBufferSize() const noexcept;

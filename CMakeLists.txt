@@ -68,8 +68,13 @@ include_directories(
     ${THIRD_PARTY_INCLUDE}/spdlog/include
 )
 find_package(OpenGL REQUIRED)
+# cpp source dir
 add_subdirectory(src)
-add_subdirectory(third-party)
+# turn this option off if you don't wnat to rebuild third-party lib
+option(BUILD_THIRD_PARTY_LIB "Building third-party dependencies" on)
+if (BUILD_THIRD_PARTY_LIB)
+    add_subdirectory(third-party)
+endif()
 # unit test option
 option(DO_TEST "Whether compile unit test" on)
 if(DO_TEST)

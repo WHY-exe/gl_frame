@@ -22,7 +22,7 @@ bool Buffer::Init(uint32_t count) noexcept {
   // to represent buffer
   GLErrorInit;
   GLCall(glGenBuffers(count, &identifier_));
-  return IsInit();
+  return GLErrorResult;
 }
 
 void Buffer::SetBuffer(std::vector<float>&& vertex_data) noexcept {
@@ -56,7 +56,7 @@ Layout::~Layout() noexcept {
 bool Layout::Init(uint32_t count) noexcept {
   GLErrorInit;
   GLCall(glGenVertexArrays(count, &identifier_));
-  return IsInit();
+  return GLErrorResult;
 }
 
 bool Layout::Bind() noexcept {
@@ -65,11 +65,12 @@ bool Layout::Bind() noexcept {
   return GLErrorResult;
 }
 
-void Layout::SetAttribute(const LayoutAttri& attri) noexcept {
+bool Layout::SetAttribute(const LayoutAttri& attri) noexcept {
   GLErrorInit;
   GLCall(glVertexAttribPointer(attri.index, attri.size, attri.type,
                                attri.normalize, attri.stride, attri.offset));
   GLCall(glEnableVertexAttribArray(attri.index));
+  return GLErrorResult;
 }
 
 }  // namespace vertex

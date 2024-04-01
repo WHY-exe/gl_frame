@@ -13,9 +13,10 @@ IndexBuffer::~IndexBuffer() noexcept {
   }
 }
 
-void IndexBuffer::Init(uint32_t count) {
+bool IndexBuffer::Init(uint32_t count) {
   GLErrorInit;
   GLCall(glGenBuffers(count, &identifier_));
+  return GLErrorResult;
 }
 
 void IndexBuffer::SetBuffer(std::vector<uint32_t>&& indicies) {

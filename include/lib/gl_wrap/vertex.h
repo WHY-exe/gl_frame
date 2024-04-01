@@ -36,7 +36,7 @@ class Layout : public Bindable {
   explicit Layout(uint32_t count = 1) noexcept;
   bool Init(uint32_t count = 1) noexcept;
 
-  void SetAttribute(const LayoutAttri& attri) noexcept;
+  bool SetAttribute(const LayoutAttri& attri) noexcept;
   bool Bind() noexcept override final;
 };
 
