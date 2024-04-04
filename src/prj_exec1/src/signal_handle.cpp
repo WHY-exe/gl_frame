@@ -17,7 +17,6 @@ void HandleQuitSignal(int signal) noexcept {
   sh.Prepare();
   rlimit rlim{0};
   getrlimit(RLIMIT_CORE, &rlim);
-  std::cout << rlim.rlim_cur << "\n" << rlim.rlim_max << std::endl;
   switch (signal) {
     case SIGSEGV:
       spdlog::error("segment fault, there might be problems in code");
@@ -32,8 +31,7 @@ void HandleQuitSignal(int signal) noexcept {
     case SIGBUS:
       spdlog::error("illegal memory access, may be memory alignment error");
       break;
-#endif / home / why / repos / cpp / linux_test / src / prj_exec1 / src / \
-    signal_handle.cpp
+#endif
     case SIGILL:
       spdlog::error("illegal instruction, there might be problems in code");
       break;
