@@ -9,6 +9,7 @@ class SignalHandler {
   SignalHandler() noexcept;
   ~SignalHandler() noexcept = default;
   void Prepare() noexcept;
+  void GenCoreDump() noexcept;
 };
 
 void HandleQuitSignal(int signal) noexcept;
