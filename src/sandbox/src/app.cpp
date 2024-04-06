@@ -13,8 +13,8 @@
 #include "gl_wrap/shader.h"
 #include "gl_wrap/vertex.h"
 #include "glm/glm.hpp"
+#include "spdlog/fmt/fmt.h"
 #include "spdlog/spdlog.h"
-
 namespace prj_exec1 {
 bool App::InitGLFW() noexcept {
   bool ret = (glfwInit() == GLFW_TRUE);
@@ -28,11 +28,11 @@ uint32_t App::InitGLEW() noexcept { return glewInit(); }
 
 App::App() : m_window() {
   if (!InitGLFW()) {
-    THROW_BASIC_EXCEPTION("Fail to init glfw Window");
+    THROW_EXCEPTION("Fail to init glfw Window", "glfw");
   }
 
   if (!m_window.Init(640, 480, "Hello World")) {
-    THROW_BASIC_EXCEPTION("Fail to create glfw window");
+    THROW_EXCEPTION("Fail to create glfw window", "glfw");
   }
 
   m_window.OnFrameBufferSized([](glfw::Window& window, int width, int height) {
@@ -42,9 +42,9 @@ App::App() : m_window() {
 
   uint32_t glew_init_stat = InitGLEW();
   if (glew_init_stat != GLEW_OK) {
-    std::stringstream ss;
-    ss << "Fail to init GLEW: " << (char*)glewGetErrorString(glew_init_stat);
-    THROW_BASIC_EXCEPTION(ss.str());
+    THROW_EXCEPTION(fmt::format("Fail to init GLEW: {}",
+                                (char*)glewGetErrorString(glew_init_stat)),
+                    "glew");
   }
 }
 
@@ -112,7 +112,7 @@ void App::Run() {
         layout.Bind();
 
         // glDrawArrays(GL_TRIANGLES, 0, 6);
-        GLCall(glDrawElements(GL_TRIANGLES, index_buffer.GetBufferSize(),
+        GLCall(glDrawElements(GL_TRIANGLES, (int)index_buffer.GetBufferSize(),
                               GL_UNSIGNED_INT, 0));
         if (!GLErrorResult) {
           spdlog::error("encounter gl error");

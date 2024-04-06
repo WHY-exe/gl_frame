@@ -1,5 +1,5 @@
 # 这个项目输出可执行文件
-project(prj_exec1)
+project(sandbox)
 # 让ide识别头文件
 file(GLOB include_file "${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME}/*.h")
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src main)

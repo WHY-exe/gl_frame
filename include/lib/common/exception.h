@@ -57,9 +57,9 @@ std::string FormatWin32Error(uint32_t error_num) noexcept;
                              error_type)                              \
       .GenBasicInfo()
 
-#define THROW_BASIC_EXCEPTION(error_msg)                                \
+#define THROW_EXCEPTION(error_msg, error_type)                          \
   throw util::exception::Basic(__LINE__, __FILE__, __func__, error_msg, \
-                               "BasicError")
+                               error_type)
 
 #define LOG_ERROR_COUT(x) \
   spdlog::error("({}:{})[{}]: {}", __FILE__, __LINE__, __func__, x)
