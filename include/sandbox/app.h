@@ -7,7 +7,7 @@
 namespace prj_exec1 {
 class App {
  private:
-  glfw::Window m_window;
+  glfw::Window window_;
 
  private:
   bool InitGLFW() noexcept;

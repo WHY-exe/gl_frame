@@ -1,8 +1,9 @@
 #include "window.h"
 
 #include "GLFW/glfw3.h"
+#include "common/exception.h"
 namespace glfw {
-Window::Window() noexcept : m_window(nullptr), m_framebuffersized_cb() {}
+Window::Window() noexcept : window_(nullptr), frameBufferSizedCallback() {}
 
 Window::Window(int width, int height, const std::string& title,
                GLFWmonitor* monitor, GLFWwindow* shared)
@@ -12,45 +13,41 @@ Window::Window(int width, int height, const std::string& title,
 
 bool Window::Init(int width, int height, const std::string& title,
                   GLFWmonitor* monitor, GLFWwindow* shared) noexcept {
-  m_window = std::unique_ptr<GLFWwindow, std::function<void(GLFWwindow*)>>(
+  window_ = std::unique_ptr<GLFWwindow, std::function<void(GLFWwindow*)>>(
       glfwCreateWindow(width, height, title.c_str(), monitor, shared),
       [](GLFWwindow* pwindow) {
         if (pwindow) {
           glfwDestroyWindow(pwindow);
         }
       });
-  glfwSetWindowUserPointer(m_window.get(), this);
+  glfwSetWindowUserPointer(window_.get(), this);
   return IsInit();
 }
 
-bool Window::IsInit() const noexcept { return m_window != nullptr; }
-
-void Window::OnFrameBufferSized(FrameBufferSizedCallback&& callback) noexcept {
-  m_framebuffersized_cb = std::move(callback);
-  glfwSetFramebufferSizeCallback(
-      m_window.get(), [](GLFWwindow* window, int width, int height) {
-        Window* pThis = (Window*)glfwGetWindowUserPointer(window);
-        pThis->m_framebuffersized_cb(*pThis, width, height);
-      });
-}
-
 void Window::SetWindowCurrent() noexcept {
-  glfwMakeContextCurrent(m_window.get());
-}
+  glfwMakeContextCurrent(window_.get());
+};
 
-void Window::Update(RenderCallBack&& callback) {
-  m_render_callback = std::move(callback);
-}
+bool Window::Start() {
+  if (frameBufferSizedCallback) {
+    glfwSetFramebufferSizeCallback(
+        window_.get(), [](GLFWwindow* window, int width, int height) {
+          Window* pThis = (Window*)glfwGetWindowUserPointer(window);
+          pThis->frameBufferSizedCallback(width, height);
+        });
+  }
 
-bool Window::Run() {
   bool callback_ret = false;
-  while (!glfwWindowShouldClose(m_window.get())) {
-    callback_ret = m_render_callback(*this);
+  while (!glfwWindowShouldClose(window_.get())) {
+    if (!renderCallback) {
+      THROW_EXCEPTION("rendering logic is not set", "glfw");
+    }
+    callback_ret = renderCallback();
     if (!callback_ret) {
       break;
     }
     /* Swap front and back buffers */
-    glfwSwapBuffers(m_window.get());
+    glfwSwapBuffers(window_.get());
 
     /* Poll for and process events */
     glfwPollEvents();

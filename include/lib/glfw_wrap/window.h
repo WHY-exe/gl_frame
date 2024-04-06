@@ -9,13 +9,15 @@ namespace glfw {
 class Window {
   using WindowContext =
       std::unique_ptr<GLFWwindow, std::function<void(GLFWwindow*)> >;
-  using RenderCallBack = std::function<bool(Window&)>;
-  using FrameBufferSizedCallback = std::function<void(Window&, int, int)>;
+  using RenderCallBack = std::function<bool(void)>;
+  using FrameBufferSizedCallback = std::function<void(int, int)>;
 
  private:
-  WindowContext m_window;
-  RenderCallBack m_render_callback;
-  FrameBufferSizedCallback m_framebuffersized_cb;
+  WindowContext window_;
+
+ public:
+  RenderCallBack renderCallback;
+  FrameBufferSizedCallback frameBufferSizedCallback;
 
  public:
   Window(const Window&) = delete;
@@ -31,14 +33,11 @@ class Window {
   bool Init(int width, int height, const std::string& title,
             GLFWmonitor* monitor = nullptr,
             GLFWwindow* shared = nullptr) noexcept;
-  bool IsInit() const noexcept;
 
-  void OnFrameBufferSized(FrameBufferSizedCallback&& callback) noexcept;
+  inline bool IsInit() const noexcept { return window_ != nullptr; };
   void SetWindowCurrent() noexcept;
-  // function called per-frame
-  void Update(RenderCallBack&& callback);
 
-  bool Run();
+  bool Start();
 };
 
 }  // namespace glfw

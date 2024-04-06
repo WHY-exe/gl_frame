@@ -26,19 +26,19 @@ bool App::InitGLFW() noexcept {
 
 uint32_t App::InitGLEW() noexcept { return glewInit(); }
 
-App::App() : m_window() {
+App::App() : window_() {
   if (!InitGLFW()) {
     THROW_EXCEPTION("Fail to init glfw Window", "glfw");
   }
 
-  if (!m_window.Init(640, 480, "Hello World")) {
+  if (!window_.Init(640, 480, "Hello World")) {
     THROW_EXCEPTION("Fail to create glfw window", "glfw");
   }
 
-  m_window.OnFrameBufferSized([](glfw::Window& window, int width, int height) {
+  window_.frameBufferSizedCallback = [](int width, int height) {
     glViewport(0, 0, width, height);
-  });
-  m_window.SetWindowCurrent();
+  };
+  window_.SetWindowCurrent();
 
   uint32_t glew_init_stat = InitGLEW();
   if (glew_init_stat != GLEW_OK) {
@@ -97,29 +97,28 @@ void App::Run() {
   gl::IndexBuffer index_buffer{};
   index_buffer.SetBuffer(std::move(indicies));
   index_buffer.Bind();
-  m_window.Update(
-      [&program, &layout, &index_buffer](glfw::Window& window) -> bool {
-        GLErrorInit;
-        /* Render here */
-        glClearColor(0.2f, 0.3f, 0.2f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+  window_.renderCallback = [&program, &layout, &index_buffer]() -> bool {
+    GLErrorInit;
+    /* Render here */
+    glClearColor(0.2f, 0.3f, 0.2f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
-        program.Use();
-        double time = glfwGetTime();
-        double xOffset = ((sin(time) / 2.0f) + 0.5f) / 2.0f;
-        program.SetUniformValue("xOffset", (float)xOffset);
+    program.Use();
+    double time = glfwGetTime();
+    double xOffset = ((sin(time) / 2.0f) + 0.5f) / 2.0f;
+    program.SetUniformValue("xOffset", (float)xOffset);
 
-        layout.Bind();
+    layout.Bind();
 
-        // glDrawArrays(GL_TRIANGLES, 0, 6);
-        GLCall(glDrawElements(GL_TRIANGLES, (int)index_buffer.GetBufferSize(),
-                              GL_UNSIGNED_INT, 0));
-        if (!GLErrorResult) {
-          spdlog::error("encounter gl error");
-        }
-        return true;
-      });
-  m_window.Run();
+    // glDrawArrays(GL_TRIANGLES, 0, 6);
+    GLCall(glDrawElements(GL_TRIANGLES, (int)index_buffer.GetBufferSize(),
+                          GL_UNSIGNED_INT, 0));
+    if (!GLErrorResult) {
+      spdlog::error("encounter gl error");
+    }
+    return true;
+  };
+  window_.Start();
 }
 
 }  // namespace prj_exec1
