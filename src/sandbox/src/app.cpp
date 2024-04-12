@@ -1,19 +1,15 @@
 #include "app.h"
 
 #include <cmath>
-#include <sstream>
 
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 #include "common/exception.h"
-#include "common/util.h"
 #include "gl_wrap/error.h"
 #include "gl_wrap/index.h"
 #include "gl_wrap/program.h"
 #include "gl_wrap/shader.h"
 #include "gl_wrap/vertex.h"
-#include "glm/glm.hpp"
-#include "spdlog/fmt/fmt.h"
 #include "spdlog/spdlog.h"
 namespace prj_exec1 {
 bool App::InitGLFW() noexcept {
@@ -43,7 +39,7 @@ App::App() : window_() {
   uint32_t glew_init_stat = InitGLEW();
   if (glew_init_stat != GLEW_OK) {
     THROW_EXCEPTION(fmt::format("Fail to init GLEW: {}",
-                                (char*)glewGetErrorString(glew_init_stat)),
+                                (char *)glewGetErrorString(glew_init_stat)),
                     "glew");
   }
 }
@@ -63,9 +59,9 @@ void App::Run() {
   }
   // vertices position data
   std::vector<float> vertices = {
-      0.5f,  0.5f,  0.0f, 1.0, 0.0, 0.0,  // top right
-      0.5f,  -0.5f, 0.0f, 0.0, 1.0, 0.0,  // bottom right
-      -0.5f, -0.5f, 0.0f, 0.0, 0.0, 1.0,  // bottom left
+      0.5f,  0.5f,  0.0f, 1.0, 0.0, 0.0, // top right
+      0.5f,  -0.5f, 0.0f, 0.0, 1.0, 0.0, // bottom right
+      -0.5f, -0.5f, 0.0f, 0.0, 0.0, 1.0, // bottom left
       //-0.5f,  0.5f, 0.0f, 1.0, 1.0, 0.0	// top left
   };
   gl::vertex::Buffer vertex_buffer{};
@@ -77,14 +73,14 @@ void App::Run() {
   attri_pos.type = GL_FLOAT;
   attri_pos.normalize = false;
   attri_pos.stride = 6 * sizeof(float);
-  attri_pos.offset = (void*)0;
+  attri_pos.offset = (void *)0;
   gl::vertex::LayoutAttri attri_color{0};
   attri_color.index = 1;
   attri_color.size = 3;
   attri_color.type = GL_FLOAT;
   attri_color.normalize = false;
   attri_color.stride = 6 * sizeof(float);
-  attri_color.offset = (void*)(3 * sizeof(float));
+  attri_color.offset = (void *)(3 * sizeof(float));
   gl::vertex::Layout layout{};
   layout.Bind();
   layout.SetAttribute(attri_pos);
@@ -121,4 +117,4 @@ void App::Run() {
   window_.Start();
 }
 
-}  // namespace prj_exec1
+} // namespace prj_exec1

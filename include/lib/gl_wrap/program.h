@@ -1,5 +1,4 @@
 #pragma once
-#include <cstdint>
 #include <string>
 #include <variant>
 
@@ -11,16 +10,16 @@ class Shader;
 class Program : public Bindable {
   friend class Shader;
 
- public:
+public:
   Program() noexcept;
   ~Program() noexcept;
-  bool AttachShader(Shader& shader) noexcept;
-  bool AttachShader(gl::ShaderType type, const std::string& path);
+  bool AttachShader(Shader &shader) noexcept;
+  bool AttachShader(gl::ShaderType type, const std::string &path);
 
   bool Bind() noexcept override final;
   void Use() noexcept;
 
-  void SetUniformValue(const std::string& name, std::variant<int, float> value);
+  void SetUniformValue(const std::string &name, std::variant<int, float> value);
 };
 
-}  // namespace gl
+} // namespace gl

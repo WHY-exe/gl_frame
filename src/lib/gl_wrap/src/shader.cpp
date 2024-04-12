@@ -5,21 +5,20 @@
 #include <sstream>
 
 #include "GL/glew.h"
-#include "common/exception.h"
 #include "error.h"
 #include "program.h"
 #include "spdlog/spdlog.h"
 namespace gl {
-Shader::Shader(Program& program) noexcept
+Shader::Shader(Program &program) noexcept
     : program_(program), is_init_(false) {}
 
-Shader::Shader(Program& program, ShaderType type,
-               const std::string& shader_path)
+Shader::Shader(Program &program, ShaderType type,
+               const std::string &shader_path)
     : Shader(program) {
   is_init_ = InitFromFile(type, shader_path);
 }
 
-bool Shader::InitFromFile(ShaderType type, const std::string& shader_path) {
+bool Shader::InitFromFile(ShaderType type, const std::string &shader_path) {
   if (!std::filesystem::exists(shader_path)) {
     spdlog::error("shader path {} no exists", shader_path);
     return false;
@@ -31,9 +30,9 @@ bool Shader::InitFromFile(ShaderType type, const std::string& shader_path) {
 }
 
 bool Shader::InitFromSrc(ShaderType type,
-                         const std::string& shader_src) noexcept {
+                         const std::string &shader_src) noexcept {
   identifier_ = glCreateShader((uint32_t)type);
-  const char* pcode = shader_src.c_str();
+  const char *pcode = shader_src.c_str();
   int src_length = (int)shader_src.length();
   glShaderSource(identifier_, 1, &pcode, &src_length);
   glCompileShader(identifier_);
@@ -70,4 +69,4 @@ void Shader::Destroy() noexcept {
 
 bool Shader::IsInit() const noexcept { return is_init_; }
 
-}  // namespace gl
+} // namespace gl

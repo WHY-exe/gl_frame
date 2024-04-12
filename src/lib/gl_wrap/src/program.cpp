@@ -14,9 +14,9 @@ Program::~Program() noexcept {
   }
 }
 
-bool Program::AttachShader(Shader& shader) noexcept { return shader.Bind(); }
+bool Program::AttachShader(Shader &shader) noexcept { return shader.Bind(); }
 
-bool Program::AttachShader(gl::ShaderType type, const std::string& path) {
+bool Program::AttachShader(gl::ShaderType type, const std::string &path) {
   gl::Shader shader(*this, type, path);
   if (!shader.IsInit()) {
     spdlog::error("Fail to init shader");
@@ -26,7 +26,7 @@ bool Program::AttachShader(gl::ShaderType type, const std::string& path) {
   }
 }
 
-void Program::SetUniformValue(const std::string& name,
+void Program::SetUniformValue(const std::string &name,
                               std::variant<int, float> value) {
   const int uniform_locaion = glGetUniformLocation(identifier_, name.c_str());
   if (uniform_locaion == -1) {
@@ -34,7 +34,7 @@ void Program::SetUniformValue(const std::string& name,
     return;
   }
   std::visit(
-      [uniform_locaion](auto&& arg) {
+      [uniform_locaion](auto &&arg) {
         using T = std::decay_t<decltype(arg)>;
         GLErrorInit;
         if constexpr (std::is_same<T, int>()) {
@@ -69,4 +69,4 @@ bool Program::Bind() noexcept {
 
 void Program::Use() noexcept { glUseProgram(identifier_); }
 
-}  // namespace gl
+} // namespace gl

@@ -5,17 +5,17 @@
 namespace glfw {
 Window::Window() noexcept : window_(nullptr), frameBufferSizedCallback() {}
 
-Window::Window(int width, int height, const std::string& title,
-               GLFWmonitor* monitor, GLFWwindow* shared)
+Window::Window(int width, int height, const std::string &title,
+               GLFWmonitor *monitor, GLFWwindow *shared)
     : Window() {
   Init(width, height, title, monitor, shared);
 }
 
-bool Window::Init(int width, int height, const std::string& title,
-                  GLFWmonitor* monitor, GLFWwindow* shared) noexcept {
-  window_ = std::unique_ptr<GLFWwindow, std::function<void(GLFWwindow*)>>(
+bool Window::Init(int width, int height, const std::string &title,
+                  GLFWmonitor *monitor, GLFWwindow *shared) noexcept {
+  window_ = std::unique_ptr<GLFWwindow, std::function<void(GLFWwindow *)>>(
       glfwCreateWindow(width, height, title.c_str(), monitor, shared),
-      [](GLFWwindow* pwindow) {
+      [](GLFWwindow *pwindow) {
         if (pwindow) {
           glfwDestroyWindow(pwindow);
         }
@@ -31,8 +31,8 @@ void Window::SetWindowCurrent() noexcept {
 bool Window::Start() {
   if (frameBufferSizedCallback) {
     glfwSetFramebufferSizeCallback(
-        window_.get(), [](GLFWwindow* window, int width, int height) {
-          Window* pThis = (Window*)glfwGetWindowUserPointer(window);
+        window_.get(), [](GLFWwindow *window, int width, int height) {
+          Window *pThis = (Window *)glfwGetWindowUserPointer(window);
           pThis->frameBufferSizedCallback(width, height);
         });
   }
@@ -55,4 +55,4 @@ bool Window::Start() {
   return callback_ret;
 }
 
-}  // namespace glfw
+} // namespace glfw

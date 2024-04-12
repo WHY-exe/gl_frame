@@ -25,7 +25,7 @@ bool Buffer::Init(uint32_t count) noexcept {
   return GLErrorResult;
 }
 
-void Buffer::SetBuffer(std::vector<float>&& vertex_data) noexcept {
+void Buffer::SetBuffer(std::vector<float> &&vertex_data) noexcept {
   buffer_ = std::move(vertex_data);
 }
 
@@ -65,7 +65,7 @@ bool Layout::Bind() noexcept {
   return GLErrorResult;
 }
 
-bool Layout::SetAttribute(const LayoutAttri& attri) noexcept {
+bool Layout::SetAttribute(const LayoutAttri &attri) noexcept {
   GLErrorInit;
   GLCall(glVertexAttribPointer(attri.index, attri.size, attri.type,
                                attri.normalize, attri.stride, attri.offset));
@@ -73,5 +73,5 @@ bool Layout::SetAttribute(const LayoutAttri& attri) noexcept {
   return GLErrorResult;
 }
 
-}  // namespace vertex
-}  // namespace gl
+} // namespace vertex
+} // namespace gl

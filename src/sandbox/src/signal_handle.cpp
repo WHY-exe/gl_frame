@@ -2,46 +2,43 @@
 
 #include <csignal>
 
-#include "common/exception.h"
-#include "common/posix_compat.h"
-#include "common/util.h"
 #include "spdlog/spdlog.h"
 #ifdef LINUX
 #include <sys/prctl.h>
 #include <sys/resource.h>
-#endif  // LINUX
-#include <iostream>
+#endif // LINUX
+
 namespace prj_exec1 {
 void HandleQuitSignal(int signal) noexcept {
   SignalHandler sh{};
   sh.Prepare();
   switch (signal) {
-    case SIGSEGV:
-      spdlog::error("segment fault, there might be problems in code");
-      break;
-    case SIGABRT:
-      spdlog::error("signal abort, there might be problems in code");
-      break;
-    case SIGFPE:
-      spdlog::error("floating point exception");
-      break;
+  case SIGSEGV:
+    spdlog::error("segment fault, there might be problems in code");
+    break;
+  case SIGABRT:
+    spdlog::error("signal abort, there might be problems in code");
+    break;
+  case SIGFPE:
+    spdlog::error("floating point exception");
+    break;
 #ifdef LINUX
-    case SIGBUS:
-      spdlog::error("illegal memory access, may be memory alignment error");
-      break;
+  case SIGBUS:
+    spdlog::error("illegal memory access, may be memory alignment error");
+    break;
 #endif
-    case SIGILL:
-      spdlog::error("illegal instruction, there might be problems in code");
-      break;
-    case SIGINT:
-      spdlog::warn("signal keyboard interrupt, quiting...");
-      break;
-    case SIGTERM:
-      spdlog::warn("signal terminate, quiting...");
-      break;
-    default:
-      spdlog::error("recieving signal %d, stopping the instance", signal);
-      break;
+  case SIGILL:
+    spdlog::error("illegal instruction, there might be problems in code");
+    break;
+  case SIGINT:
+    spdlog::warn("signal keyboard interrupt, quiting...");
+    break;
+  case SIGTERM:
+    spdlog::warn("signal terminate, quiting...");
+    break;
+  default:
+    spdlog::error("recieving signal %d, stopping the instance", signal);
+    break;
   }
   sh.GenCoreDump();
   exit(1);
@@ -92,4 +89,4 @@ void SignalHandler::GenCoreDump() noexcept {
 #endif
 }
 
-}  // namespace prj_exec1
+} // namespace prj_exec1

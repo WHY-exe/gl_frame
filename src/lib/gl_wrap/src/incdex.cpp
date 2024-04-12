@@ -19,7 +19,7 @@ bool IndexBuffer::Init(uint32_t count) {
   return GLErrorResult;
 }
 
-void IndexBuffer::SetBuffer(std::vector<uint32_t>&& indicies) {
+void IndexBuffer::SetBuffer(std::vector<uint32_t> &&indicies) {
   buffer_ = std::move(indicies);
 }
 
@@ -34,4 +34,4 @@ bool IndexBuffer::Bind() noexcept {
   return GLErrorResult;
 }
 
-}  // namespace gl
+} // namespace gl

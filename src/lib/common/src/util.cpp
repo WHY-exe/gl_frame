@@ -3,7 +3,6 @@
 #include <spdlog/spdlog.h>
 
 #include <cmath>
-#include <csignal>
 #include <cstdio>
 #include <iostream>
 #include <sstream>
@@ -196,4 +195,4 @@ std::string RemoveCharInStr(const std::string &target,
   }
   return strRet;
 }
-}  // namespace util
+} // namespace util

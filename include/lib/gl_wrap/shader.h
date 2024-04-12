@@ -15,18 +15,18 @@ class Program;
 class Shader : public Bindable {
   friend class Program;
 
- private:
-  Program& program_;
+private:
+  Program &program_;
   bool is_init_;
 
- public:
-  Shader(Program& program) noexcept;
+public:
+  Shader(Program &program) noexcept;
   ~Shader() noexcept;
 
-  Shader(Program& program, ShaderType type, const std::string& shader_path);
+  Shader(Program &program, ShaderType type, const std::string &shader_path);
 
-  bool InitFromFile(ShaderType type, const std::string& shader_path);
-  bool InitFromSrc(ShaderType type, const std::string& shader_src) noexcept;
+  bool InitFromFile(ShaderType type, const std::string &shader_path);
+  bool InitFromSrc(ShaderType type, const std::string &shader_src) noexcept;
 
   bool Bind() noexcept override final;
   void Destroy() noexcept;
@@ -34,4 +34,4 @@ class Shader : public Bindable {
   bool IsInit() const noexcept override;
 };
 
-}  // namespace gl
+} // namespace gl
