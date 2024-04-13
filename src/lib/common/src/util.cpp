@@ -2,15 +2,17 @@
 
 #include <spdlog/spdlog.h>
 
+#include "exception.h"
+#ifdef WINDOWS
+#include "posix_compat.h"
+#endif
 #include <cmath>
 #include <cstdio>
 #include <iostream>
+#include <list>
 #include <sstream>
 #include <string>
 #include <unordered_map>
-
-#include "exception.h"
-#include "posix_compat.h"
 namespace util {
 std::string exec_cmd::GetLine(const std::string &cmd) {
   std::unique_ptr<FILE, std::function<void(FILE *)>> pfileStream(

@@ -1,8 +1,8 @@
 ﻿#include "signal_handle.h"
 
-#include <csignal>
-
+#include "common/exception.h"
 #include "spdlog/spdlog.h"
+#include <csignal>
 #ifdef LINUX
 #include <sys/prctl.h>
 #include <sys/resource.h>
