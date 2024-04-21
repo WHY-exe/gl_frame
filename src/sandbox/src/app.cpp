@@ -46,14 +46,14 @@ int App::Run() {
   gl::vertex::Buffer vertex_buffer{};
   vertex_buffer.SetBuffer(std::move(vertices));
   vertex_buffer.Bind();
-  gl::vertex::LayoutAttri attri_pos{0};
+  gl::vertex::LayoutAttri attri_pos{};
   attri_pos.index = 0;
   attri_pos.size = 3;
   attri_pos.type = GL_FLOAT;
   attri_pos.normalize = false;
   attri_pos.stride = 6 * sizeof(float);
   attri_pos.offset = (void *)0;
-  gl::vertex::LayoutAttri attri_color{0};
+  gl::vertex::LayoutAttri attri_color{};
   attri_color.index = 1;
   attri_color.size = 3;
   attri_color.type = GL_FLOAT;
