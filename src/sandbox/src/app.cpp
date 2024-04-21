@@ -1,52 +1,31 @@
 #include "app.h"
-
-#include <cmath>
-
-#include "GL/glew.h"
-#include "GLFW/glfw3.h"
-#include "common/exception.h"
 #include "gl_wrap/error.h"
 #include "gl_wrap/index.h"
 #include "gl_wrap/program.h"
 #include "gl_wrap/shader.h"
 #include "gl_wrap/vertex.h"
 #include "spdlog/spdlog.h"
-namespace prj_exec1 {
+#include <cmath>
+
+namespace sandbox {
 bool App::InitGLFW() noexcept {
-  bool ret = (glfwInit() == GLFW_TRUE);
+  bool ret = glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   return ret;
 }
 
-uint32_t App::InitGLEW() noexcept { return glewInit(); }
-
-App::App() : window_() {
-  if (!InitGLFW()) {
-    THROW_EXCEPTION("Fail to init glfw Window", "glfw");
-  }
-
-  if (!window_.Init(640, 480, "Hello World")) {
-    THROW_EXCEPTION("Fail to create glfw window", "glfw");
-  }
-
+bool App::InitWindow() noexcept {
+  bool ret = window_.Init(640, 480, "Hello World");
   window_.frameBufferSizedCallback = [](int width, int height) {
     glViewport(0, 0, width, height);
   };
   window_.SetWindowCurrent();
-
-  uint32_t glew_init_stat = InitGLEW();
-  if (glew_init_stat != GLEW_OK) {
-    THROW_EXCEPTION(fmt::format("Fail to init GLEW: {}",
-                                (char *)glewGetErrorString(glew_init_stat)),
-                    "glew");
-  }
+  return ret;
 }
 
-App::~App() { glfwTerminate(); }
-
-void App::Run() {
+int App::Run() {
   // pre-create shader and bind them to the pipeline
   gl::Program program{};
   if (program.IsInit()) {
@@ -115,6 +94,7 @@ void App::Run() {
     return true;
   };
   window_.Start();
+  return 0;
 }
 
-} // namespace prj_exec1
+} // namespace sandbox

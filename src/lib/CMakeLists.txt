@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.11...3.20)
-
-file(GLOB LIBS_SUBDIRECTORIES LIST_SUBDIRECTORY true "*")
-
+if(WIN32)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif()
+# add subdirectory for other third party lib
 add_subdirectory(common)
 add_subdirectory(gl_wrap)
 add_subdirectory(glfw_wrap)

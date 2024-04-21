@@ -1,7 +1,7 @@
 #include "window.h"
 
 #include "GLFW/glfw3.h"
-#include "common/exception.h"
+#include "common/log.h"
 namespace glfw {
 Window::Window() noexcept : window_(nullptr), frameBufferSizedCallback() {}
 
@@ -40,7 +40,8 @@ bool Window::Start() {
   bool callback_ret = false;
   while (!glfwWindowShouldClose(window_.get())) {
     if (!renderCallback) {
-      THROW_EXCEPTION("rendering logic is not set", "glfw");
+      LOG_ERROR_COUT("rendering logic is not set");
+      break;
     }
     callback_ret = renderCallback();
     if (!callback_ret) {

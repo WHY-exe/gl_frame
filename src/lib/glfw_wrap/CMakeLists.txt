@@ -10,6 +10,10 @@ add_library(${PROJECT_NAME} STATIC
     ${src} 
     ${include_file}
 )
+# setting up compile flags
+set_property(TARGET ${PROJECT_NAME} APPEND_STRING
+    PROPERTY COMPILE_FLAGS ${PROJECT_COMPILE_FLAG}
+)
 
 # setting up include dir
 target_include_directories(${PROJECT_NAME}

@@ -1,22 +1,21 @@
 #pragma once
 #include <glfw_wrap/window.h>
 
-#include <functional>
-#include <memory>
+#include "GL/glew.h"
+#include "GLFW/glfw3.h"
 
-namespace prj_exec1 {
+namespace sandbox {
 class App {
- private:
+private:
   glfw::Window window_;
 
- private:
+public:
+  App() noexcept = default;
+  inline ~App() noexcept { glfwTerminate(); };
   bool InitGLFW() noexcept;
-  uint32_t InitGLEW() noexcept;
-
- public:
-  App();
-  ~App() noexcept;
-  void Run();
+  bool InitWindow() noexcept;
+  inline uint32_t InitGLEW() noexcept { return glewInit(); };
+  int Run();
 };
 
-}  // namespace prj_exec1
+} // namespace sandbox

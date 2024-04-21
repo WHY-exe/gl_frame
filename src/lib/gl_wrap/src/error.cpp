@@ -1,7 +1,5 @@
 #include "error.h"
 
-#include <sstream>
-
 #include "GL/glew.h"
 #include "spdlog/spdlog.h"
 namespace gl {

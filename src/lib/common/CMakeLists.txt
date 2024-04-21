@@ -1,14 +1,12 @@
-cmake_minimum_required(VERSION 3.11...3.20)
+cmake_minimum_required(VERSION 3.12...3.20)
 project(common)
-
 # source code dir
-aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src src)
-file(GLOB include_file "${INCLUDE_BASE}/lib/${PROJECT_NAME}/*.h")
+aux_source_directory(${PROJECT_SOURCE_DIR}/src src)
+file(GLOB include_file "${CMAKE_SOURCE_DIR}/include/lib/${PROJECT_NAME}/*.h")
 add_library(${PROJECT_NAME} SHARED
     ${src} 
     ${include_file}
-)
-
+ )
 # setting up include dir
 target_include_directories(${PROJECT_NAME}
     PRIVATE
@@ -19,5 +17,10 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
     spdlog::spdlog
 )
+# setting up compile flags
+set_property(TARGET ${PROJECT_NAME} APPEND_STRING
+    PROPERTY COMPILE_FLAGS ${PROJECT_COMPILE_FLAG}
+)
 
-add_dependencies(${PROJECT_NAME} spdlog)
+
+add_dependencies(${PROJECT_NAME} spdlog::spdlog)
