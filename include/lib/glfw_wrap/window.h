@@ -1,43 +1,43 @@
 #pragma once
+#include "keyboard.h"
+#include <GLFW/glfw3.h>
 #include <functional>
-#include <memory>
 #include <string>
-struct GLFWwindow;
-struct GLFWmonitor;
 
 namespace glfw {
+using FrameBufferSizedCallback = std::function<void(int, int)>;
+
 class Window {
-  using WindowContext =
-      std::unique_ptr<GLFWwindow, std::function<void(GLFWwindow*)> >;
-  using RenderCallBack = std::function<bool(void)>;
-  using FrameBufferSizedCallback = std::function<void(int, int)>;
+private:
+  GLFWwindow *window_ = nullptr;
 
- private:
-  WindowContext window_;
-
- public:
-  RenderCallBack renderCallback;
+public:
+  Keyboard kbd;
   FrameBufferSizedCallback frameBufferSizedCallback;
 
- public:
-  Window(const Window&) = delete;
-  Window& operator=(const Window&) = delete;
-  Window(Window&&) = delete;
-  Window& operator=(Window&&) = delete;
-  ~Window() = default;
+public:
+  Window(const Window &) = delete;
+  Window &operator=(const Window &) = delete;
+  Window(Window &&) = delete;
+  Window &operator=(Window &&) = delete;
 
-  Window() noexcept;
-  Window(int width, int height, const std::string& title,
-         GLFWmonitor* monitor = nullptr, GLFWwindow* shared = nullptr);
+  Window() noexcept = default;
+  ~Window() noexcept;
+  Window(int width, int height, const std::string &title,
+         GLFWmonitor *monitor = nullptr, GLFWwindow *shared = nullptr);
 
-  bool Init(int width, int height, const std::string& title,
-            GLFWmonitor* monitor = nullptr,
-            GLFWwindow* shared = nullptr) noexcept;
+  bool Init(int width, int height, const std::string &title,
+            GLFWmonitor *monitor = nullptr,
+            GLFWwindow *shared = nullptr) noexcept;
 
   inline bool IsInit() const noexcept { return window_ != nullptr; };
-  void SetWindowCurrent() noexcept;
+  // inidicate that a glfw should close
+  inline int ShouldClose() noexcept { return glfwWindowShouldClose(window_); }
+  inline void SwapBuffer() noexcept { glfwSwapBuffers(window_); }
+  inline void SetWindowCurrent() noexcept { glfwMakeContextCurrent(window_); };
 
-  bool Start();
+  void BindCallback();
 };
 
-}  // namespace glfw
+inline void PollEvents() { glfwPollEvents(); };
+} // namespace glfw

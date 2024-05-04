@@ -1,4 +1,5 @@
 #include "app.h"
+#include "GLFW/glfw3.h"
 #include "gl_wrap/error.h"
 #include "gl_wrap/index.h"
 #include "gl_wrap/program.h"
@@ -25,6 +26,30 @@ bool App::InitWindow() noexcept {
   return ret;
 }
 
+void App::DoLogic() noexcept {
+  if (window_.kbd.KeyIsPressed(GLFW_KEY_A)) {
+    spdlog::info("a key is pressed");
+  }
+}
+
+void App::DoRender(gl::Program &program) noexcept {
+  GLErrorInit;
+  /* Render here */
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  program.Use();
+  double time = glfwGetTime();
+  double xOffset = ((sin(time) / 2.0f) + 0.5f) / 2.0f;
+  program.SetUniformValue("xOffset", (float)xOffset);
+
+  // glDrawArrays(GL_TRIANGLES, 0, 6);
+  GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
+  if (!GLErrorResult) {
+    spdlog::error("encounter gl error");
+  }
+}
+
 int App::Run() {
   // pre-create shader and bind them to the pipeline
   gl::Program program{};
@@ -41,7 +66,7 @@ int App::Run() {
       0.5f,  0.5f,  0.0f, 1.0, 0.0, 0.0, // top right
       0.5f,  -0.5f, 0.0f, 0.0, 1.0, 0.0, // bottom right
       -0.5f, -0.5f, 0.0f, 0.0, 0.0, 1.0, // bottom left
-      //-0.5f,  0.5f, 0.0f, 1.0, 1.0, 0.0	// top left
+      -0.5f, 0.5f,  0.0f, 1.0, 1.0, 0.0  // top left
   };
   gl::vertex::Buffer vertex_buffer{};
   vertex_buffer.SetBuffer(std::move(vertices));
@@ -65,35 +90,21 @@ int App::Run() {
   layout.SetAttribute(attri_pos);
   layout.SetAttribute(attri_color);
   // binding index buffer
-  std::vector<uint32_t> indicies = {
-      0, 1, 2
-      // 1, 2, 3
-  };
+  std::vector<uint32_t> indicies = {0, 1, 2, 3, 2, 0};
   gl::IndexBuffer index_buffer{};
   index_buffer.SetBuffer(std::move(indicies));
   index_buffer.Bind();
-  window_.renderCallback = [&program, &layout, &index_buffer]() -> bool {
-    GLErrorInit;
-    /* Render here */
-    glClearColor(0.2f, 0.3f, 0.2f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    program.Use();
-    double time = glfwGetTime();
-    double xOffset = ((sin(time) / 2.0f) + 0.5f) / 2.0f;
-    program.SetUniformValue("xOffset", (float)xOffset);
+  while (!window_.ShouldClose()) {
+    DoLogic();
+    DoRender(program);
 
     layout.Bind();
 
-    // glDrawArrays(GL_TRIANGLES, 0, 6);
-    GLCall(glDrawElements(GL_TRIANGLES, (int)index_buffer.GetBufferSize(),
-                          GL_UNSIGNED_INT, 0));
-    if (!GLErrorResult) {
-      spdlog::error("encounter gl error");
-    }
-    return true;
-  };
-  window_.Start();
+    /* Swap front and back buffers */
+    window_.SwapBuffer();
+    /* Poll for and process events */
+    glfw::PollEvents();
+  }
   return 0;
 }
 

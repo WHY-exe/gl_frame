@@ -4,6 +4,6 @@ in vec3 pointColor;
 in vec4 pos_out;
 void main()
 {
-	FragColor = pos_out;
+	FragColor = vec4( pointColor, 1.0f);
 }
 
