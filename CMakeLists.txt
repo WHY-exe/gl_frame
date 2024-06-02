@@ -26,29 +26,20 @@ else()
 endif()
 # solve the cmake windows dll problem by
 # specifying the global dll ouput path
-set(BIN_OUT_DIR "${CMAKE_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE}")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${BIN_OUT_DIR}/static_lib")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${BIN_OUT_DIR}")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BIN_OUT_DIR}")
+set(BIN_DIR "${CMAKE_SOURCE_DIR}/bin/${CMAKE_SYSTEM_NAME}/${CMAKE_BUILD_TYPE}")
+# static lib
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${BIN_DIR}/static_lib")
+# shared lib
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${BIN_DIR}")
+# executable
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BIN_DIR}")
 
 file(COPY "${CMAKE_SOURCE_DIR}/shader/" DESTINATION "${BIN_OUT_DIR}/shader")
-# add library linking dir
-link_directories(
-    ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-    ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
-)
+
 # public include dir
 set(INCLUDE_BASE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(THIRD_PARTY_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/third-party)
-include_directories(
-    ${INCLUDE_BASE}
-    ${INCLUDE_BASE}/lib
-    ${THIRD_PARTY_INCLUDE}/assimp/include
-    ${THIRD_PARTY_INCLUDE}/glew-cmake/include
-    ${THIRD_PARTY_INCLUDE}/glfw/include
-    ${THIRD_PARTY_INCLUDE}/glm
-    ${THIRD_PARTY_INCLUDE}/spdlog/include
-)
+
 find_package(OpenGL REQUIRED)
 # cpp source dir
 add_subdirectory(src)
@@ -63,4 +54,8 @@ if(DO_TEST)
     enable_testing()
     add_subdirectory(test)
     add_test(NAME unit_test COMMAND unit_test)
+endif()
+# copy compile_commands.json to SOURCE_DIR to enable clangd magic
+if (EXISTS "${CMAKE_BINARY_DIR}/compile_commands.json")
+    file(COPY "${CMAKE_BINARY_DIR}/compile_commands.json" DESTINATION "${CMAKE_SOURCE_DIR}")
 endif()

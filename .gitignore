@@ -1,6 +1,7 @@
 # ignore output binaries
-/build/
+build/
 bin/
+compile_commands.json
 # ignore cmake generate files
 *Makefile
 # ignore cmake cahe files
@@ -8,4 +9,5 @@ bin/
 # ignore vscode settings file
 # .vscode/
 .vs/
+out/
 .cache/
