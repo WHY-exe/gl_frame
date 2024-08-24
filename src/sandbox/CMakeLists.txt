@@ -2,6 +2,7 @@
 project(sandbox)
 # 让ide识别头文件
 file(GLOB include_file "${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME}/*.h")
+set(INCLUDE_BASE ${PROJECT_SOURCE_DIR}/include)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src main)
 add_executable(${PROJECT_NAME} ${main} ${include_file})
 # setting up include dir
@@ -15,7 +16,7 @@ target_link_libraries(${PROJECT_NAME}
     common
     ${OPENGL_LIBRARIES}
     glfw
-    libglew_shared
+    glew
     glm
     spdlog::spdlog
     gl_wrap
@@ -29,7 +30,7 @@ add_dependencies(${PROJECT_NAME}
     common 
     spdlog::spdlog 
     glfw 
-    libglew_shared 
+    glew
     glm::glm    
     gl_wrap
     glfw_wrap
