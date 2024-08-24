@@ -1,6 +1,4 @@
 # ignore output binaries
-build/
-bin/
 compile_commands.json
 # ignore cmake generate files
 *Makefile

@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
+set(CMAKE_POSITION_INDEPENDENT_CODE on)
 
 project(stb_image)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src src)
