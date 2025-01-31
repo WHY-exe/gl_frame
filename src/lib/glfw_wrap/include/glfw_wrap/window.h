@@ -12,8 +12,7 @@ private:
     GLFWwindow *window_ = nullptr;
 
 public:
-    Keyboard                 kbd;
-    FrameBufferSizedCallback frameBufferSizedCallback;
+    Keyboard kbd;
 
 public:
     Window(const Window &)            = delete;
@@ -29,19 +28,11 @@ public:
     bool Init(int width, int height, const std::string &title, GLFWmonitor *monitor = nullptr,
               GLFWwindow *shared = nullptr) noexcept;
 
-    inline bool IsInit() const noexcept {
-        return window_ != nullptr;
-    };
+    bool IsInit() const noexcept;
     // inidicate that a glfw should close
-    inline int ShouldClose() noexcept {
-        return glfwWindowShouldClose(window_);
-    }
-    inline void SwapBuffer() noexcept {
-        glfwSwapBuffers(window_);
-    }
-    inline void SetWindowCurrent() noexcept {
-        glfwMakeContextCurrent(window_);
-    };
+    int  ShouldClose() noexcept;
+    void SwapBuffer() noexcept;
+    void SetWindowCurrent() noexcept;
 
     void BindCallback();
 };

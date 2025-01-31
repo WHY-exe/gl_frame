@@ -3,19 +3,26 @@
 #include <vector>
 
 #include "bindable.h"
+
 namespace gl::vertex {
 class Buffer : public Bindable {
 private:
     std::vector<float> buffer_;
+    int count_;
 
 public:
-    ~Buffer() noexcept;
+    DEFAULT_MOVE_CTOR(Buffer);
 
-    explicit Buffer(uint32_t count = 1) noexcept;
-    bool Init(uint32_t count = 1) noexcept;
+    ~Buffer() noexcept override;
+    static Result<Buffer> New(int count = 1) noexcept;
 
     void SetBuffer(std::vector<float> &&vertex_data) noexcept;
-    bool Bind() noexcept final;
+    Result<void> Bind() noexcept final;
+
+private:
+    Buffer() noexcept = default;
+    DEL_COPY_CTOR(Buffer);
+
 };
 
 struct LayoutAttri {
@@ -28,14 +35,21 @@ struct LayoutAttri {
 };
 
 class Layout : public Bindable {
+private:
+    int count_;
+
 public:
-    ~Layout() noexcept;
+    DEFAULT_MOVE_CTOR(Layout);
+    ~Layout() noexcept override;
 
-    explicit Layout(uint32_t count = 1) noexcept;
-    bool Init(uint32_t count = 1) noexcept;
+    static Result<Layout> New(int count = 1) noexcept;
 
-    bool SetAttribute(const LayoutAttri &attri) noexcept;
-    bool Bind() noexcept final;
+    Result<void> SetAttribute(const LayoutAttri &attri) noexcept;
+    Result<void> Bind() noexcept final;
+
+private:
+    Layout() noexcept = default;
+    DEL_COPY_CTOR(Layout);
 };
 
 } // namespace gl::vertex

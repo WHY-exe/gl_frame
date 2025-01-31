@@ -26,6 +26,10 @@ char Keyboard::ReadChar() noexcept {
     return 0;
 }
 
+void Keyboard::ClearState() noexcept {
+    key_stat_.reset();
+};
+
 void Keyboard::OnKey(uint32_t key_code, int action) noexcept {
     key_stat_[key_code] = (action == GLFW_PRESS);
     key_events_.push(Event(static_cast<Event::Stat>(action), key_code));

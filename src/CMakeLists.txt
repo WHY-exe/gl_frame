@@ -11,6 +11,8 @@ else()
     endif()
 endif()
 
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/shader/" DESTINATION "${BIN_DIR}/shader")
+
 add_compile_definitions(
     SPDLOG_COMPILED_LIB
 )

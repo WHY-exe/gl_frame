@@ -1,5 +1,6 @@
 #pragma once
-#include "GL/glew.h"
+#include <GL/glew.h>
+
 #include "glfw_wrap/context.h"
 #include "gl_wrap/program.h"
 #include "glfw_wrap/window.h"
@@ -19,6 +20,10 @@ public:
 
 private:
     bool InitWindow() noexcept;
+    App(App &&) noexcept                 = delete;
+    App &operator=(App &&) noexcept      = delete;
+    App(const App &) noexcept            = delete;
+    App &operator=(const App &) noexcept = delete;
 };
 
 } // namespace sandbox

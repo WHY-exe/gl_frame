@@ -11,15 +11,20 @@ class Program : public Bindable {
     friend class Shader;
 
 public:
-    Program() noexcept;
-    ~Program() noexcept;
-    bool AttachShader(Shader &shader) noexcept;
-    bool AttachShader(gl::ShaderType type, const std::string &path);
+    DEFAULT_MOVE_CTOR(Program);
+    static Result<Program> New() noexcept;
 
-    bool Bind() noexcept final;
-    void Use() noexcept;
+    ~Program() noexcept override;
+    Result<void> AttachShader(Shader &shader) noexcept;
+    Result<void> AttachShader(ShaderType type, const std::string &path);
 
-    void SetUniformValue(const std::string &name, std::variant<int, float> value);
+    Result<void> Bind() noexcept final;
+    Result<void> SetUniformValue(const std::string &name, std::variant<int, float> value);
+    void         Use() noexcept;
+
+private:
+    Program() noexcept = default;
+    DEL_COPY_CTOR(Program);
 };
 
 } // namespace gl

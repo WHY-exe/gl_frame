@@ -15,6 +15,12 @@ set_property(TARGET ${PROJECT_NAME} APPEND_STRING
     PROPERTY COMPILE_FLAGS ${PROJECT_COMPILE_FLAG}
 )
 
+set_target_properties(${PROJECT_NAME}
+    PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY "${BIN_DIR}/../static_lib"
+        ARCHIVE_OUTPUT_DIRECTORY "${BIN_DIR}/../static_lib"
+        RUNTIME_OUTPUT_DIRECTORY "${BIN_DIR}/../static_lib"
+)
 # setting up include dir
 target_include_directories(${PROJECT_NAME}
     PUBLIC
@@ -23,10 +29,17 @@ target_include_directories(${PROJECT_NAME}
     ${INCLUDE_BASE}/${PROJECT_NAME}
 )
 
-target_link_libraries(${PROJECT_NAME} 
-    PRIVATE
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC
+    spdlog::spdlog
+    cpptrace::cpptrace
+    glew
     common
+)
+
+add_dependencies(${PROJECT_NAME}
+    glfw
     glew
     spdlog::spdlog
+    cpptrace::cpptrace
 )
-add_dependencies(${PROJECT_NAME} spdlog)

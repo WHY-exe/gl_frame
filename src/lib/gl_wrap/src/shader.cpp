@@ -4,70 +4,68 @@
 #include <fstream>
 #include <sstream>
 
-#include "GL/glew.h"
-#include "error.h"
+#include <GL/glew.h>
+#include "error.hpp"
 #include "program.h"
-#include "spdlog/spdlog.h"
-namespace gl {
-Shader::Shader(Program &program) noexcept : program_(program), is_init_(false) {}
+#include <spdlog/spdlog.h>
 
-Shader::Shader(Program &program, ShaderType type, const std::string &shader_path)
-    : Shader(program) {
-    is_init_ = InitFromFile(type, shader_path);
+namespace gl {
+Result<Shader> Shader::New(uint32_t program, ShaderType type, const std::string &shader_path) {
+    Shader shader;
+    shader.program_ = program;
+    shader.type_ = type;
+    RET_IF_ERROR(shader.InitFromFile(shader_path));
+    return shader;
 }
 
-bool Shader::InitFromFile(ShaderType type, const std::string &shader_path) {
+Result<void> Shader::InitFromFile(const std::string &shader_path) {
     if (!std::filesystem::exists(shader_path)) {
-        spdlog::error("shader path {} no exists", shader_path);
-        return false;
+        return tl::unexpected(MakeError(SHADER_FILE_NOT_FOUND, "Shader file not found in path"));
     }
     const std::ifstream ifs(shader_path);
     std::stringstream   ss;
     ss << ifs.rdbuf();
-    return InitFromSrc(type, ss.str());
+    return InitFromSrc(ss.str());
 }
 
-bool Shader::InitFromSrc(ShaderType type, const std::string &shader_src) noexcept {
-    handle_                = glCreateShader(static_cast<uint32_t>(type));
+Result<void> Shader::InitFromSrc(const std::string &shader_src) noexcept {
+    auto shader_res = CheckError(glCreateShader, static_cast<uint32_t>(type_));
+    if (!shader_res) {
+        return tl::unexpected(shader_res.error());
+    }
+    handle_                = *shader_res;
+    is_init_               = true;
     const char *pcode      = shader_src.c_str();
     int         src_length = static_cast<int>(shader_src.length());
     glShaderSource(handle_, 1, &pcode, &src_length);
     glCompileShader(handle_);
     // check if compliation is successful
-    int success, info_len;
+    int success = 0, info_len = 0;
     glGetShaderiv(handle_, GL_COMPILE_STATUS, &success);
     if (!success) {
         // get the info log length
         glGetShaderiv(handle_, GL_INFO_LOG_LENGTH, &info_len);
-        std::unique_ptr<char[]> info_log = std::make_unique<char[]>(info_len);
-
-        glGetShaderInfoLog(handle_, info_len, NULL, info_log.get());
-        spdlog::error("SHADER::COMPILATION_FAILED: {}", info_log.get());
-        return is_init_;
+        std::string info_log(info_len, '\0');
+        glGetShaderInfoLog(handle_, info_len, nullptr, &info_log[0]);
+        return tl::unexpected(gl::MakeError(SHADER_ERROR, std::move(info_log)));
     }
-    is_init_ = true;
-    return is_init_;
+    return {};
 }
 
-Shader::~Shader() {
+Shader::~Shader() noexcept {
     Destroy();
 }
 
-bool Shader::Bind() noexcept {
-    GLErrorInit;
-    GLCall(glAttachShader(program_.GetID(), handle_));
-    return GLErrorResult;
+gl::Result<void> Shader::Bind() noexcept {
+    RET_IF_ERROR(CheckError(glAttachShader, program_, handle_));
+    return {};
 }
 
 void Shader::Destroy() noexcept {
-    if (!IsInit()) {
+    if (is_init_) {
         glDeleteShader(handle_);
-        handle_ = 0;
+        is_init_ = false;
     }
-}
-
-bool Shader::IsInit() const noexcept {
-    return is_init_;
 }
 
 } // namespace gl

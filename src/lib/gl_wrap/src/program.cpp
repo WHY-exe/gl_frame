@@ -1,73 +1,70 @@
 #include "program.h"
 
 #include "GL/glew.h"
-#include "error.h"
 #include "shader.h"
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
+
 
 namespace gl {
-Program::Program() noexcept : Bindable() {
-    handle_ = glCreateProgram();
+Result<Program> Program::New() noexcept{
+    Program program;
+    auto program_handle = CheckError(glCreateProgram);
+    RET_IF_ERROR(program_handle);
+    program.handle_ = *program_handle;
+    program.is_init_ = true;
+    return program;
 }
 
 Program::~Program() noexcept {
-    if (IsInit()) {
+    if (is_init_) {
         glDeleteProgram(handle_);
+        is_init_ = false;
     }
 }
 
-bool Program::AttachShader(Shader &shader) noexcept {
+Result<void> Program::AttachShader(Shader &shader) noexcept {
     return shader.Bind();
 }
 
-bool Program::AttachShader(gl::ShaderType type, const std::string &path) {
-    gl::Shader shader(*this, type, path);
-    if (!shader.IsInit()) {
-        spdlog::error("Fail to init shader");
-        return false;
-    } else {
-        return AttachShader(shader);
-    }
+Result<void> Program::AttachShader(gl::ShaderType type, const std::string &path) {
+    auto shader = Shader::New(handle_, type, path);
+    RET_IF_ERROR(shader) ; 
+    return AttachShader(*shader);
 }
 
-void Program::SetUniformValue(const std::string &name, std::variant<int, float> value) {
-    const int uniform_locaion = glGetUniformLocation(handle_, name.c_str());
-    if (uniform_locaion == -1) {
-        spdlog::error("fail to fetch uniform location with name {}", name);
-        return;
+Result<void> Program::SetUniformValue(const std::string       &name,
+                                                    std::variant<int, float> value) {
+    const auto uniform_locaion = gl::CheckError(glGetUniformLocation, handle_, name.c_str());
+    if (!uniform_locaion) {
+        return tl::unexpected(uniform_locaion.error());
     }
-    std::visit(
-        [uniform_locaion](auto &&arg) {
+    return std::visit(
+        [uniform_locaion](auto &&arg) -> gl::Result<void> {
             using T = std::decay_t<decltype(arg)>;
-            GLErrorInit;
             if constexpr (std::is_same<T, int>()) {
-                GLCall(glUniform1i(uniform_locaion, arg));
+                RET_IF_ERROR(gl::CheckError(glUniform1i, *uniform_locaion, arg));
+                return {};
             } else if constexpr (std::is_same<T, float>()) {
-                GLCall(glUniform1f(uniform_locaion, arg));
+                RET_IF_ERROR(gl::CheckError(glUniform1f, *uniform_locaion, arg));
+                return {};
             } else {
-                spdlog::warn("unknown data type");
+                assert("unknown data type");
             }
         },
         value);
 }
 
-bool Program::Bind() noexcept {
-    if (!IsInit()) {
-        spdlog::error("program is not init");
-        return false;
-    }
-
-    glLinkProgram(handle_);
+Result<void> Program::Bind() noexcept {
+    RET_IF_ERROR(gl::CheckError(glLinkProgram, handle_));
     int success, info_len;
     glGetProgramiv(handle_, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramiv(handle_, GL_INFO_LOG_LENGTH, &info_len);
-        std::unique_ptr<char[]> info_log = std::make_unique<char[]>(info_len);
-        glGetProgramInfoLog(handle_, 512, nullptr, info_log.get());
-        spdlog::error("fail to link shader program: {}", info_log.get());
-        return false;
+        std::string info_log(info_len, '\0');
+        glGetProgramInfoLog(handle_, 512, nullptr, &info_log[0]);
+        return tl::unexpected(gl::MakeError(PROGRAM_ERROR, std::move(info_log)));
     }
-    return true;
+    return {};
 }
 
 void Program::Use() noexcept {

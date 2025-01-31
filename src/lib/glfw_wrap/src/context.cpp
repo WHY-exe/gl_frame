@@ -1,11 +1,11 @@
 #include "context.h"
 #include "GLFW/glfw3.h"
-#include "common/exception.h"
+#include <cpptrace/cpptrace.hpp>
 
 namespace glfw {
 Context::Context(int version_major, int version_minor) {
     if (glfwInit() == GLFW_FALSE) {
-        THROW_EXCEPTION("fail to init glfw", "glfw");
+        throw cpptrace::runtime_error("fail to init glfw");
     }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, version_major);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, version_minor);

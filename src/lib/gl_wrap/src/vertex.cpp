@@ -1,76 +1,66 @@
 #include "vertex.h"
 
 #include "GL/glew.h"
-#include "error.h"
+#include "error.hpp"
 
 namespace gl {
 namespace vertex {
-
-    Buffer::Buffer(uint32_t count) noexcept {
-        // TODO: exception handling
-        Init(count);
-    }
-
     Buffer::~Buffer() noexcept {
-        if (IsInit()) {
-            glDeleteBuffers(1, &handle_);
+        if (is_init_) {
+            glDeleteBuffers(count_, &handle_);
         }
     }
 
-    bool Buffer::Init(uint32_t count) noexcept {
+    Result<Buffer> Buffer::New(int count) noexcept {
         // generate one buffer object and return a uint
         // to represent buffer
-        GLErrorInit;
-        GLCall(glGenBuffers(count, &handle_));
-        return GLErrorResult;
+        Buffer buffer;
+        buffer.count_ = count;
+        RET_IF_ERROR(CheckError(glGenBuffers, buffer.count_, &buffer.handle_));
+        buffer.is_init_ = true;
+        return buffer;
     }
 
     void Buffer::SetBuffer(std::vector<float> &&vertex_data) noexcept {
         buffer_ = std::move(vertex_data);
     }
 
-    bool Buffer::Bind() noexcept {
-        GLErrorInit;
-        GLCall(glBindBuffer(GL_ARRAY_BUFFER, handle_));
+    Result<void> Buffer::Bind() noexcept {
+        RET_IF_ERROR(CheckError(glBindBuffer, GL_ARRAY_BUFFER, handle_));
         // copy the vertices data to the buffer object
         // with the specific type that currently bound
         // to the pipline
         if (!buffer_.empty()) {
-            GLCall(glBufferData(GL_ARRAY_BUFFER, buffer_.size() * sizeof(float), buffer_.data(),
-                                GL_STATIC_DRAW));
+            RET_IF_ERROR(CheckError(glBufferData, GL_ARRAY_BUFFER, buffer_.size() * sizeof(float),
+                                    buffer_.data(), GL_STATIC_DRAW));
         }
-        return GLErrorResult;
-    }
-
-    Layout::Layout(uint32_t count) noexcept {
-        // TODO: error handling
-        Init(count);
+        return {};
     }
 
     Layout::~Layout() noexcept {
-        if (IsInit()) {
+        if (is_init_) {
             glDeleteVertexArrays(1, &handle_);
         }
     }
 
-    bool Layout::Init(uint32_t count) noexcept {
-        GLErrorInit;
-        GLCall(glGenVertexArrays(count, &handle_));
-        return GLErrorResult;
+    Result<Layout> Layout::New(int count) noexcept {
+        Layout layout;
+        layout.count_ = count;
+        RET_IF_ERROR(CheckError(glGenVertexArrays, count, &layout.handle_));
+        layout.is_init_ = true;
+        return layout;
     }
 
-    bool Layout::Bind() noexcept {
-        GLErrorInit;
-        GLCall(glBindVertexArray(handle_));
-        return GLErrorResult;
+    Result<void> Layout::Bind() noexcept {
+        RET_IF_ERROR(CheckError(glBindVertexArray, handle_));
+        return {};
     }
 
-    bool Layout::SetAttribute(const LayoutAttri &attri) noexcept {
-        GLErrorInit;
-        GLCall(glVertexAttribPointer(attri.index, attri.size, attri.type, attri.normalize,
-                                     attri.stride, attri.offset));
-        GLCall(glEnableVertexAttribArray(attri.index));
-        return GLErrorResult;
+    Result<void> Layout::SetAttribute(const LayoutAttri &attri) noexcept {
+        RET_IF_ERROR(CheckError(glVertexAttribPointer, attri.index, attri.size, attri.type,
+                                attri.normalize, attri.stride, attri.offset));
+        RET_IF_ERROR(CheckError(glEnableVertexAttribArray, attri.index));
+        return {};
     }
 
 } // namespace vertex

@@ -1,6 +1,7 @@
 #pragma once
 #include "bindable.h"
 #include "common/image_loader.h"
+#include "common/macro.h"
 #include <cstdint>
 #include <vector>
 namespace gl {
@@ -15,10 +16,15 @@ private:
     int32_t num_ = 0;
 
 public:
-    explicit Texture2D(int num = 1) noexcept;
-    ~Texture2D() noexcept;
-    bool Bind() noexcept override;
-    bool SetParam(const std::vector<Filter> &filters) noexcept;
-    bool SetData(const util::ImageLoader &loader) noexcept;
+    DEFAULT_MOVE_CTOR(Texture2D);
+    static Result<Texture2D> New(int num = 1) noexcept;
+
+    ~Texture2D() noexcept override;
+    Result<void> Bind() noexcept override;
+    Result<void> SetParam(const std::vector<Filter> &filters) noexcept;
+    Result<void> SetData(const util::ImageLoader &loader) noexcept;
+private:
+    DEL_COPY_CTOR(Texture2D);
+    Texture2D() noexcept = default;
 };
 } // namespace gl

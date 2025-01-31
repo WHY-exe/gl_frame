@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.11...3.20)
 add_subdirectory(assimp)
 add_subdirectory(Catch2)
+add_subdirectory(cpptrace)
+add_subdirectory(expected)
 add_subdirectory(glew-2.2.0/build/cmake)
 add_subdirectory(glfw)
 add_subdirectory(glm)

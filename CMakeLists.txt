@@ -2,33 +2,32 @@
 cmake_minimum_required(VERSION 3.11...3.20)
 
 # enter your project name here
-project(gl_frame)
-# specify c++ standar
+project(gl_frame LANGUAGES C CXX)
+option(BUILD_EXAMPLE OFF)
+option(BUILD_TEST "Whether compile unit test" OFF)
+# C++ standar
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # msvc compile option
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    # set debug compile option
+    if (POLICY CMP0141)
+        cmake_policy(SET CMP0141 NEW)
+        set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF: $< AND: $<C_COMPILER_ID:MSVC>, $<CXX_COMPILER_ID:MSVC> >, $< $<CONFIG:Debug,RelWithDebInfo>:EditAndContinue >, $< $<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+    endif()
     add_compile_definitions(
         _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
     )
-else()
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -ggdb")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 endif()
-# solve the cmake windows dll problem by
-# specifying the global dll ouput path
+find_package(Threads REQUIRED)
+# public include dir
+set(THIRD_PARTY_INCLUDE "${PROJECT_SOURCE_DIR}/third-party")
 # binary output dir
 set(BIN_DIR "${CMAKE_BINARY_DIR}/bin")
-# static lib
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${BIN_DIR}/static_lib")
-# shared lib
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${BIN_DIR}")
-# executable
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BIN_DIR}")
-
-file(COPY "${CMAKE_SOURCE_DIR}/shader/" DESTINATION "${BIN_DIR}/shader")
-
-set(THIRD_PARTY_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/third-party)
+# example binary output dir
+set(EXAMPLE_DIR "${CMAKE_BINARY_DIR}/example")
+# test binary output dir
+set(TEST_DIR "${CMAKE_BINARY_DIR}/test")
 
 find_package(OpenGL REQUIRED)
 add_subdirectory(third-party)

@@ -1,5 +1,5 @@
 #pragma once
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 #include <bitset>
 #include <cstdint>
 #include <queue>
@@ -34,9 +34,7 @@ public:
     Keyboard(const Keyboard &)            = delete;
     Keyboard &operator=(const Keyboard &) = delete;
 
-    inline void ClearState() noexcept {
-        key_stat_.reset();
-    };
+    void  ClearState() noexcept;
     bool  KeyIsPressed(uint8_t key_code) const noexcept;
     Event ReadKey() noexcept;
     char  ReadChar() noexcept;
