@@ -13,5 +13,5 @@
     class_name &operator=(class_name &&) = delete;
 
 #define DEFAULT_MOVE_CTOR(class_name)                                                              \
-    class_name(class_name &&)            = default;                                                \
-    class_name &operator=(class_name &&) = default;
+    class_name(class_name &&) noexcept            = default;                                       \
+    class_name &operator=(class_name &&) noexcept = default;

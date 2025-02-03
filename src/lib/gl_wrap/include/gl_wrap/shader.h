@@ -4,6 +4,8 @@
 
 #include "bindable.h"
 #include "common/macro.h"
+#include <filesystem>
+
 namespace gl {
 
 enum class ShaderType { UNKNOWN = 0x0000, VERTEX = 0x8B31, FRAGMENT = 0x8B30, GEOMETRY = 0x8DD9 };
@@ -17,13 +19,14 @@ public:
     DEFAULT_MOVE_CTOR(Shader);
     ~Shader() noexcept override;
 
-    static Result<Shader> New(uint32_t program, ShaderType type, const std::string &shader_path);
+    static Result<Shader> New(uint32_t program, const std::filesystem::path &shader_path);
+    static Result<Shader> New(uint32_t program, ShaderType type, const std::string &shader_src);
 
     gl::Result<void> Bind() noexcept final;
     void             Destroy() noexcept;
 
 private:
-    Result<void> InitFromFile(const std::string &shader_path);
+    Result<void> InitFromFile(const std::filesystem::path &shader_path);
     Result<void> InitFromSrc(const std::string &shader_src) noexcept;
 
 private:

@@ -84,7 +84,6 @@ LONG WINAPI ExceptionFilter(LPEXCEPTION_POINTERS lpExceptionInfo) noexcept {
 void PrepareCore() noexcept {
     rlimit rlim{0};
     if (prctl(PR_SET_DUMPABLE, 1) < 0) {
-        SPDLOG_ERROR("{}", strerror(errno));
         return;
     }
     rlim.rlim_cur = RLIM_INFINITY;

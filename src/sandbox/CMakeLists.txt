@@ -17,11 +17,13 @@ target_link_libraries(${PROJECT_NAME}
     common
     ${OPENGL_LIBRARIES}
     glfw
-    glew
+    glew_s
     glm
     spdlog::spdlog
     gl_wrap
     glfw_wrap
+    PRIVATE
+    glsl::shader
 )
 
 add_dependencies(${PROJECT_NAME} 
@@ -29,7 +31,7 @@ add_dependencies(${PROJECT_NAME}
     common 
     spdlog::spdlog 
     glfw 
-    glew
+    glew_s
     glm::glm    
     gl_wrap
     glfw_wrap

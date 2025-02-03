@@ -16,7 +16,7 @@ public:
 
     ~Program() noexcept override;
     Result<void> AttachShader(Shader &shader) noexcept;
-    Result<void> AttachShader(ShaderType type, const std::string &path);
+    Result<void> AttachShader(ShaderType type, const std::string &shader_src);
 
     Result<void> Bind() noexcept final;
     Result<void> SetUniformValue(const std::string &name, std::variant<int, float> value);

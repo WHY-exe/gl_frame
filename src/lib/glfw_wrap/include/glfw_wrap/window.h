@@ -15,10 +15,8 @@ public:
     Keyboard kbd;
 
 public:
-    Window(const Window &)            = delete;
-    Window &operator=(const Window &) = delete;
-    Window(Window &&)                 = delete;
-    Window &operator=(Window &&)      = delete;
+    DEL_COPY_CTOR(Window);
+    DEL_MOVE_CTOR(Window);
 
     Window() noexcept = default;
     ~Window() noexcept;

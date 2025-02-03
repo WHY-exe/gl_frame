@@ -10,6 +10,9 @@
 #include "spdlog/spdlog.h"
 #include <cmath>
 #include <cpptrace/cpptrace.hpp>
+#include <cmrc/cmrc.hpp>
+
+CMRC_DECLARE(glsl);
 
 namespace sandbox {
 App::App() : context_(3, 3) {
@@ -62,8 +65,14 @@ int App::Run() {
                      program.error().extra_info);
         return -1;
     }
-    program->AttachShader(gl::ShaderType::VERTEX, "./shader/vertex_shader.vs");
-    program->AttachShader(gl::ShaderType::FRAGMENT, "./shader/fragment_shader.fs");
+    auto fs = cmrc::glsl::get_filesystem();
+    auto vertex_shader = fs.open("shader/vertex_shader.vs");
+    auto frag_shader = fs.open("shader/fragment_shader.fs");
+    std::string frag_shader_text(frag_shader.cbegin(), frag_shader.cend());
+    std::string vertex_shader_text(vertex_shader.cbegin(), vertex_shader.cend());
+
+    program->AttachShader(gl::ShaderType::VERTEX, vertex_shader_text);
+    program->AttachShader(gl::ShaderType::FRAGMENT, frag_shader_text);
     program->Bind();
     // vertices position data
     std::vector<float> vertices = {

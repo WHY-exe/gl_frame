@@ -42,13 +42,13 @@ auto CheckError(Func &&GLFx, Args &&...FxArgs) -> Result<std::invoke_result_t<Fu
     GLenum err = GL_NO_ERROR;
     if constexpr (std::is_void_v<GLFxReturnType>) {
         fx();
-        while ((err = glGetError())) {
+        while ((err = glGetError()) != GL_NO_ERROR) {
             return tl::unexpected(MakeError(err));
         }
         return {};
     } else {
         GLFxReturnType func_ret = fx();
-        while ((err = glGetError())) {
+        while ((err = glGetError()) != GL_NO_ERROR) {
             return tl::unexpected(MakeError(err));
         }
         return func_ret;

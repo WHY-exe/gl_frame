@@ -1,4 +1,5 @@
 #pragma once
+#include "common/macro.h"
 
 namespace glfw {
 class Context {
@@ -7,9 +8,7 @@ public:
     ~Context() noexcept;
 
 private:
-    Context(const Context &)            = delete;
-    Context &operator=(const Context &) = delete;
-    Context(Context &&)                 = delete;
-    Context &operator=(Context &&)      = delete;
+    DEL_COPY_CTOR(Context);
+    DEL_MOVE_CTOR(Context);
 };
 } // namespace glfw

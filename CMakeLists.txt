@@ -19,15 +19,17 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
         _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
     )
 endif()
-find_package(Threads REQUIRED)
+
 # public include dir
 set(THIRD_PARTY_INCLUDE "${PROJECT_SOURCE_DIR}/third-party")
 # binary output dir
-set(BIN_DIR "${CMAKE_BINARY_DIR}/bin")
+set(BIN_DIR "${CMAKE_BINARY_DIR}/../bin/${CMAKE_BUILD_TYPE}/")
 # example binary output dir
 set(EXAMPLE_DIR "${CMAKE_BINARY_DIR}/example")
 # test binary output dir
 set(TEST_DIR "${CMAKE_BINARY_DIR}/test")
+
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/CMakeRC.cmake")
 
 find_package(OpenGL REQUIRED)
 add_subdirectory(third-party)

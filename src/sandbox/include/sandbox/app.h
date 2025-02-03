@@ -4,6 +4,7 @@
 #include "glfw_wrap/context.h"
 #include "gl_wrap/program.h"
 #include "glfw_wrap/window.h"
+#include "common/macro.h"
 
 namespace sandbox {
 class App {
@@ -20,10 +21,8 @@ public:
 
 private:
     bool InitWindow() noexcept;
-    App(App &&) noexcept                 = delete;
-    App &operator=(App &&) noexcept      = delete;
-    App(const App &) noexcept            = delete;
-    App &operator=(const App &) noexcept = delete;
+    DEL_COPY_CTOR(App);
+    DEL_MOVE_CTOR(App);
 };
 
 } // namespace sandbox

@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <queue>
 
+#include "common/macro.h"
+
 struct GLFWwindow;
 namespace glfw {
 class Keyboard {
@@ -29,10 +31,9 @@ private:
     std::queue<char>     char_events_;
 
 public:
-    Keyboard() noexcept                   = default;
-    ~Keyboard() noexcept                  = default;
-    Keyboard(const Keyboard &)            = delete;
-    Keyboard &operator=(const Keyboard &) = delete;
+    DEFAULT_MOVE_CTOR(Keyboard);
+    Keyboard() noexcept  = default;
+    ~Keyboard() noexcept = default;
 
     void  ClearState() noexcept;
     bool  KeyIsPressed(uint8_t key_code) const noexcept;
@@ -44,6 +45,7 @@ private:
     void OnChar(char ch) noexcept;
     template <typename Ty>
     static void TrimBuffer(std::queue<Ty> &buffer) noexcept;
+    DEL_COPY_CTOR(Keyboard);
 };
 
 } // namespace glfw

@@ -9,7 +9,6 @@
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
       "cacheVariables": {
-        "SPDLOG_BUILD_PIC": "on",
         "CMAKE_EXPORT_COMPILE_COMMANDS": true
       },
       "condition": {
@@ -72,7 +71,6 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "cl.exe",
         "CMAKE_CXX_COMPILER": "cl.exe",
-        "SPDLOG_BUILD_PIC": "on",
         "CMAKE_EXPORT_COMPILE_COMMANDS": true
       },
       "condition": {

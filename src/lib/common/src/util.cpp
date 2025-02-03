@@ -12,6 +12,7 @@
 #include <vector>
 
 #ifdef WIN32
+#    include <Windows.h>
 #    define popen _popen
 #    define pclose _pclose
 #endif
@@ -166,4 +167,22 @@ std::string RemoveCharInStr(const std::string &target, const std::string &chs) n
     });
     return strRet;
 }
+
+#ifdef WIN32
+std::string StrLastError(uint32_t error_num) noexcept {
+    std::string err(MAX_BUFFER_SIZE, '\0');
+    if (error_num == 0) {
+        error_num = GetLastError();
+    }
+    if (0
+        == FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM
+                             | FORMAT_MESSAGE_IGNORE_INSERTS,
+                         nullptr, error_num, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), &err[0], 0,
+                         nullptr)) {
+        sprintf_s(&err[0], err.size(), "undefine error description(%d)", error_num);
+    }
+    err.resize(err.find_first_of('\0'));
+    return err;
+}
+#endif // WIN32
 } // namespace util

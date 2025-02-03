@@ -10,15 +10,32 @@
 #include <spdlog/spdlog.h>
 
 namespace gl {
-Result<Shader> Shader::New(uint32_t program, ShaderType type, const std::string &shader_path) {
+Result<Shader> Shader::New(uint32_t program, ShaderType type, const std::string &shader_src) {
     Shader shader;
     shader.program_ = program;
     shader.type_ = type;
+    RET_IF_ERROR(shader.InitFromSrc(shader_src));
+    return shader;
+}
+
+Result<Shader> Shader::New(uint32_t program, const std::filesystem::path &shader_path) {
+    Shader shader;
+    shader.program_ = program;
+    if (shader_path.extension() == "vs") {
+        shader.type_ = ShaderType::VERTEX;
+    } else if (shader_path.extension() == "fs") {
+        shader.type_ = ShaderType::FRAGMENT;
+    } else if (shader_path.extension() == "gs") {
+        shader.type_ = ShaderType::GEOMETRY;
+    } else {
+        shader.type_ = ShaderType::UNKNOWN;
+    }
     RET_IF_ERROR(shader.InitFromFile(shader_path));
     return shader;
 }
 
-Result<void> Shader::InitFromFile(const std::string &shader_path) {
+
+Result<void> Shader::InitFromFile(const std::filesystem::path &shader_path) {
     if (!std::filesystem::exists(shader_path)) {
         return tl::unexpected(MakeError(SHADER_FILE_NOT_FOUND, "Shader file not found in path"));
     }
@@ -37,8 +54,8 @@ Result<void> Shader::InitFromSrc(const std::string &shader_src) noexcept {
     is_init_               = true;
     const char *pcode      = shader_src.c_str();
     int         src_length = static_cast<int>(shader_src.length());
-    glShaderSource(handle_, 1, &pcode, &src_length);
-    glCompileShader(handle_);
+    RET_IF_ERROR(CheckError(glShaderSource, handle_, 1, &pcode, &src_length));
+    RET_IF_ERROR(CheckError(glCompileShader, handle_));
     // check if compliation is successful
     int success = 0, info_len = 0;
     glGetShaderiv(handle_, GL_COMPILE_STATUS, &success);

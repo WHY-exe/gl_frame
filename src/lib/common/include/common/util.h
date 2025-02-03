@@ -27,4 +27,8 @@ std::string RemoveExtraSpaceInStr(const std::string &origin_str);
 std::string RemoveExtraCharInStr(const std::string &origin_str, char c) noexcept;
 std::string RemoveCharInStr(const std::string &target, char ch) noexcept;
 std::string RemoveCharInStr(const std::string &target, const std::string &chs) noexcept;
+
+#ifdef WIN32
+std::string StrLastError(uint32_t error_num) noexcept;
+#endif // WIN32
 }; // namespace util
