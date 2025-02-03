@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <variant>
-
+#include <string_view>
 #include "bindable.h"
 namespace gl {
 enum class ShaderType;
@@ -16,7 +16,7 @@ public:
 
     ~Program() noexcept override;
     Result<void> AttachShader(Shader &shader) noexcept;
-    Result<void> AttachShader(ShaderType type, const std::string &shader_src);
+    Result<void> AttachShader(ShaderType type, const std::string_view &shader_src);
 
     Result<void> Bind() noexcept final;
     Result<void> SetUniformValue(const std::string &name, std::variant<int, float> value);

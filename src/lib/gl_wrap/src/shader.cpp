@@ -10,7 +10,7 @@
 #include <spdlog/spdlog.h>
 
 namespace gl {
-Result<Shader> Shader::New(uint32_t program, ShaderType type, const std::string &shader_src) {
+Result<Shader> Shader::New(uint32_t program, ShaderType type, const std::string_view &shader_src) {
     Shader shader;
     shader.program_ = program;
     shader.type_ = type;
@@ -45,14 +45,14 @@ Result<void> Shader::InitFromFile(const std::filesystem::path &shader_path) {
     return InitFromSrc(ss.str());
 }
 
-Result<void> Shader::InitFromSrc(const std::string &shader_src) noexcept {
+Result<void> Shader::InitFromSrc(const std::string_view &shader_src) noexcept {
     auto shader_res = CheckError(glCreateShader, static_cast<uint32_t>(type_));
     if (!shader_res) {
         return tl::unexpected(shader_res.error());
     }
     handle_                = *shader_res;
     is_init_               = true;
-    const char *pcode      = shader_src.c_str();
+    const char *pcode      = shader_src.data();
     int         src_length = static_cast<int>(shader_src.length());
     RET_IF_ERROR(CheckError(glShaderSource, handle_, 1, &pcode, &src_length));
     RET_IF_ERROR(CheckError(glCompileShader, handle_));

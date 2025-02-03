@@ -26,7 +26,7 @@ Result<void> Program::AttachShader(Shader &shader) noexcept {
     return shader.Bind();
 }
 
-Result<void> Program::AttachShader(gl::ShaderType type, const std::string &shader_src) {
+Result<void> Program::AttachShader(gl::ShaderType type, const std::string_view &shader_src) {
     auto shader = Shader::New(handle_, type, shader_src);
     RET_IF_ERROR(shader) ; 
     return AttachShader(*shader);

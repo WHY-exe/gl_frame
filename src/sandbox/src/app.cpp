@@ -11,6 +11,7 @@
 #include <cmath>
 #include <cpptrace/cpptrace.hpp>
 #include <cmrc/cmrc.hpp>
+#include <string_view>
 
 CMRC_DECLARE(glsl);
 
@@ -68,8 +69,8 @@ int App::Run() {
     auto fs = cmrc::glsl::get_filesystem();
     auto vertex_shader = fs.open("shader/vertex_shader.vs");
     auto frag_shader = fs.open("shader/fragment_shader.fs");
-    std::string frag_shader_text(frag_shader.cbegin(), frag_shader.cend());
-    std::string vertex_shader_text(vertex_shader.cbegin(), vertex_shader.cend());
+    std::string_view frag_shader_text(frag_shader.cbegin(), frag_shader.cend());
+    std::string_view vertex_shader_text(vertex_shader.cbegin(), vertex_shader.cend());
 
     program->AttachShader(gl::ShaderType::VERTEX, vertex_shader_text);
     program->AttachShader(gl::ShaderType::FRAGMENT, frag_shader_text);
