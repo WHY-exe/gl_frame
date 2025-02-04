@@ -43,7 +43,7 @@ static void InitLog(int level = SPDLOG_LEVEL_INFO, bool enable_console = true,
                     bool                         enable_file = true,
                     const std::filesystem::path &file_path   = "logs/default.log") {
     spdlog::level::level_enum     log_level = static_cast<spdlog::level::level_enum>(level);
-    constexpr char const         *pattern   = "[%Y-%m-%d %H:%M:%S.%e][%!:%#][tid %t][%l] %v";
+    constexpr char const         *pattern   = "[%Y-%m-%d %H:%M:%S.%e][%s:%#][tid %t][%l] %v";
     std::vector<spdlog::sink_ptr> sink_list;
     if (enable_console) {
         auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();

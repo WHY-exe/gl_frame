@@ -13,7 +13,7 @@ namespace gl {
 Result<Shader> Shader::New(uint32_t program, ShaderType type, const std::string_view &shader_src) {
     Shader shader;
     shader.program_ = program;
-    shader.type_ = type;
+    shader.type_    = type;
     RET_IF_ERROR(shader.InitFromSrc(shader_src));
     return shader;
 }
@@ -33,7 +33,6 @@ Result<Shader> Shader::New(uint32_t program, const std::filesystem::path &shader
     RET_IF_ERROR(shader.InitFromFile(shader_path));
     return shader;
 }
-
 
 Result<void> Shader::InitFromFile(const std::filesystem::path &shader_path) {
     if (!std::filesystem::exists(shader_path)) {
@@ -64,6 +63,7 @@ Result<void> Shader::InitFromSrc(const std::string_view &shader_src) noexcept {
         glGetShaderiv(handle_, GL_INFO_LOG_LENGTH, &info_len);
         std::string info_log(info_len, '\0');
         glGetShaderInfoLog(handle_, info_len, nullptr, &info_log[0]);
+        info_log.resize(info_log.find_first_of('\n'));
         return tl::unexpected(gl::MakeError(SHADER_ERROR, std::move(info_log)));
     }
     return {};
@@ -73,7 +73,7 @@ Shader::~Shader() noexcept {
     Destroy();
 }
 
-gl::Result<void> Shader::Bind() noexcept {
+Result<void> Shader::Bind() noexcept {
     RET_IF_ERROR(CheckError(glAttachShader, program_, handle_));
     return {};
 }

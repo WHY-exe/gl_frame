@@ -14,7 +14,7 @@ protected:
     }
 
 public:
-    virtual gl::Result<void> Bind() noexcept = 0;
+    virtual Result<void> Bind() noexcept = 0;
 
     Bindable() noexcept          = default;
     virtual ~Bindable() noexcept = default;

@@ -4,6 +4,8 @@
 #include <system_error>
 #include <tl/expected.hpp>
 
+#include <spdlog/fmt/bundled/format.h>
+
 namespace gl {
 
 enum ERRORCODE {
@@ -55,6 +57,28 @@ auto CheckError(Func &&GLFx, Args &&...FxArgs) -> Result<std::invoke_result_t<Fu
     }
 }
 } // namespace gl
+
+template <>
+class fmt::formatter<gl::Error> {
+public:
+    constexpr auto parse(auto &context) {
+        auto       iter{context.begin()};
+        const auto end{context.end()};
+        if (iter != end && *iter != '}') {
+            throw fmt::format_error{"Invalid gl::Error format specifier."};
+        }
+
+        return iter;
+    };
+
+    auto format(const gl::Error &gl_error, auto &context) {
+        if (gl_error.extra_info.empty()) {
+            return fmt::format_to(context.out(), "[{}]", gl_error.code.message());
+        }
+        return fmt::format_to(context.out(), "[{}] {}",
+                              gl_error.code.message(), gl_error.extra_info);
+    }
+};
 
 #define RET_IF_ERROR(expected)                                                                     \
     if (!(expected)) {                                                                             \

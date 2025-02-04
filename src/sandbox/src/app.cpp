@@ -53,8 +53,7 @@ void App::DoRender(gl::Program &program) noexcept {
     // glDrawArrays(GL_TRIANGLES, 0, 6);
     auto draw_res = gl::CheckError(glDrawElements, GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     if (!draw_res) {
-        SPDLOG_ERROR("encounter gl error: {} {}", draw_res.error().code.message(),
-                     draw_res.error().extra_info);
+        SPDLOG_ERROR("encounter gl error: {}", draw_res.error());
     }
 }
 
@@ -62,18 +61,26 @@ int App::Run() {
     // pre-create shader and bind them to the pipeline
     auto program = gl::Program::New();
     if (!program) {
-        SPDLOG_ERROR("fail to init glProgram: {} {}", program.error().code.message(),
-                     program.error().extra_info);
+        SPDLOG_ERROR("fail to init glProgram: {}", program.error());
         return -1;
     }
-    auto fs = cmrc::glsl::get_filesystem();
-    auto vertex_shader = fs.open("shader/vertex_shader.vs");
-    auto frag_shader = fs.open("shader/fragment_shader.fs");
+    // read shader file from resource
+    auto             fs            = cmrc::glsl::get_filesystem();
+    auto             vertex_shader = fs.open("shader/vertex_shader.vs");
+    auto             frag_shader   = fs.open("shader/fragment_shader.fs");
     std::string_view frag_shader_text(frag_shader.cbegin(), frag_shader.cend());
     std::string_view vertex_shader_text(vertex_shader.cbegin(), vertex_shader.cend());
-
-    program->AttachShader(gl::ShaderType::VERTEX, vertex_shader_text);
-    program->AttachShader(gl::ShaderType::FRAGMENT, frag_shader_text);
+    // attach shader to pipeline
+    auto vs_attach_res = program->AttachShader(gl::ShaderType::VERTEX, vertex_shader_text);
+    if (!vs_attach_res) {
+        SPDLOG_ERROR("fail to attach vertex shader: {}", vs_attach_res.error());
+        return -1;
+    }
+    auto fs_attach_res = program->AttachShader(gl::ShaderType::FRAGMENT, frag_shader_text);
+    if (!fs_attach_res) {
+        SPDLOG_ERROR("fail to attach fragment shader: {}", fs_attach_res.error());
+        return -1;
+    }
     program->Bind();
     // vertices position data
     std::vector<float> vertices = {
@@ -84,8 +91,7 @@ int App::Run() {
     };
     auto vertex_buffer = gl::vertex::Buffer::New();
     if (!vertex_buffer) {
-        SPDLOG_ERROR("fail to init vertex buffer: {} {}", vertex_buffer.error().code.message(),
-                     vertex_buffer.error().extra_info);
+        SPDLOG_ERROR("fail to init vertex buffer: {}", vertex_buffer.error());
         return -1;
     }
     vertex_buffer->SetBuffer(std::move(vertices));

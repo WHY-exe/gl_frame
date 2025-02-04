@@ -20,10 +20,11 @@ public:
     ~Shader() noexcept override;
 
     static Result<Shader> New(uint32_t program, const std::filesystem::path &shader_path);
-    static Result<Shader> New(uint32_t program, ShaderType type, const std::string_view &shader_src);
+    static Result<Shader> New(uint32_t program, ShaderType type,
+                              const std::string_view &shader_src);
 
-    gl::Result<void> Bind() noexcept final;
-    void             Destroy() noexcept;
+    Result<void> Bind() noexcept final;
+    void         Destroy() noexcept;
 
 private:
     Result<void> InitFromFile(const std::filesystem::path &shader_path);
