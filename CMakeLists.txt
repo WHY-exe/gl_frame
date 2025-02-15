@@ -29,7 +29,7 @@ set(EXAMPLE_DIR "${CMAKE_BINARY_DIR}/example")
 # test binary output dir
 set(TEST_DIR "${CMAKE_BINARY_DIR}/test")
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/CMakeRC.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/CMakeRC/CMakeRC.cmake")
 
 find_package(OpenGL REQUIRED)
 add_subdirectory(third-party)

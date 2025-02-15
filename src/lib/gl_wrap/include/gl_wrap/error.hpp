@@ -75,12 +75,15 @@ public:
         if (gl_error.extra_info.empty()) {
             return fmt::format_to(context.out(), "[{}]", gl_error.code.message());
         }
-        return fmt::format_to(context.out(), "[{}] {}",
-                              gl_error.code.message(), gl_error.extra_info);
+        return fmt::format_to(context.out(), "[{}] {}", gl_error.code.message(),
+                              gl_error.extra_info);
     }
 };
 
 #define RET_IF_ERROR(expected)                                                                     \
-    if (!(expected)) {                                                                             \
-        return tl::unexpected((expected).error());                                                 \
+    {                                                                                              \
+        const auto &ref_expected = (expected);                                                     \
+        if (!ref_expected) {                                                                       \
+            return tl::unexpected(ref_expected.error());                                           \
+        }                                                                                          \
     }
